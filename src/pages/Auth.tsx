@@ -8,13 +8,32 @@ import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
+import { z } from "zod";
+
+// E.164-ish: + and 8-15 digits (allow leading + optional)
+const phoneRegex = /^\+?[1-9]\d{7,14}$/;
+const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+
+const signupSchema = z.object({
+  username: z.string().regex(usernameRegex, "3–20 chars, letters/numbers/underscore only"),
+  phone: z.string().regex(phoneRegex, "Enter a valid phone (e.g. +14155551234)"),
+  password: z.string().min(8, "Password must be at least 8 characters").max(72),
+});
+
+const loginSchema = z.object({
+  identifier: z.string().min(3, "Enter your username or phone"),
+  password: z.string().min(1, "Password required"),
+});
+
+const normalizePhone = (p: string) => (p.startsWith("+") ? p : `+${p.replace(/\D/g, "")}`);
 
 export default function Auth() {
   const [params] = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup">(params.get("mode") === "signup" ? "signup" : "signin");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -26,18 +45,54 @@ export default function Auth() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        const parsed = signupSchema.safeParse({ username, phone, password });
+        if (!parsed.success) {
+          throw new Error(parsed.error.issues[0].message);
+        }
+        const normalizedPhone = normalizePhone(parsed.data.phone);
+
+        // Check username uniqueness up front (DB also enforces it)
+        const { data: existingPhone } = await supabase.rpc("get_phone_by_username", {
+          _username: parsed.data.username,
+        });
+        if (existingPhone) throw new Error("That username is already taken");
+
         const { error } = await supabase.auth.signUp({
-          email, password,
+          phone: normalizedPhone,
+          password: parsed.data.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: name },
+            data: {
+              username: parsed.data.username,
+              full_name: parsed.data.username,
+              phone: normalizedPhone,
+            },
           },
         });
         if (error) throw error;
-        toast.success("Welcome! Check your email if confirmation is required.");
+        toast.success("Account created! Signing you in…");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const parsed = loginSchema.safeParse({ identifier, password });
+        if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+
+        // If identifier looks like a phone, use it directly. Otherwise resolve username -> phone.
+        let phoneToUse: string | null = null;
+        const idTrim = parsed.data.identifier.trim();
+        if (phoneRegex.test(idTrim) || phoneRegex.test(idTrim.replace(/\s/g, ""))) {
+          phoneToUse = normalizePhone(idTrim.replace(/\s/g, ""));
+        } else {
+          const { data, error: rpcErr } = await supabase.rpc("get_phone_by_username", {
+            _username: idTrim,
+          });
+          if (rpcErr) throw rpcErr;
+          phoneToUse = data as string | null;
+        }
+        if (!phoneToUse) throw new Error("Invalid username or password");
+
+        const { error } = await supabase.auth.signInWithPassword({
+          phone: phoneToUse,
+          password: parsed.data.password,
+        });
+        if (error) throw new Error("Invalid credentials");
         toast.success("Signed in");
       }
     } catch (err: any) {
@@ -45,14 +100,6 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const google = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) toast.error(error.message);
   };
 
   return (
@@ -65,28 +112,58 @@ export default function Auth() {
             {mode === "signup" ? "Build your first resume in 2 minutes." : "Sign in to continue."}
           </p>
 
-          <Button type="button" variant="outline" className="w-full mt-6" onClick={google}>
-            <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.17v2.92h5.28c-.23 1.4-1.66 4.1-5.28 4.1-3.18 0-5.78-2.63-5.78-5.87s2.6-5.87 5.78-5.87c1.81 0 3.02.77 3.71 1.43l2.53-2.43C16.91 4.04 14.95 3 12.18 3 6.85 3 2.55 7.3 2.55 12.25s4.3 9.25 9.63 9.25c5.56 0 9.24-3.91 9.24-9.41 0-.63-.07-1.11-.17-1.5z"/></svg>
-            Continue with Google
-          </Button>
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <form onSubmit={handle} className="space-y-4">
+          <form onSubmit={handle} className="space-y-4 mt-6">
             {mode === "signup" && (
+              <>
+                <div>
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="yourname"
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+14155551234"
+                    autoComplete="tel"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {mode === "signin" && (
               <div>
-                <Label htmlFor="name">Full name</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <Label htmlFor="identifier">Username or phone</Label>
+                <Input
+                  id="identifier"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="yourname or +14155551234"
+                  autoComplete="username"
+                  required
+                />
               </div>
             )}
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={mode === "signup" ? 8 : 1}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              />
             </div>
             <Button type="submit" disabled={loading} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90">
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
