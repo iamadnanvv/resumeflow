@@ -1,0 +1,56 @@
+import { corsHeaders } from "@supabase/supabase-js/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+const PLAN_PRICES: Record<string, number> = { pro: 49900, premium: 99900 }; // paise
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  try {
+    const { plan } = await req.json();
+    if (!PLAN_PRICES[plan]) throw new Error("Invalid plan");
+
+    const KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
+    const KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
+    if (!KEY_ID || !KEY_SECRET) {
+      return new Response(JSON.stringify({ error: "Razorpay not configured" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Auth
+    const auth = req.headers.get("Authorization");
+    if (!auth) throw new Error("Unauthorized");
+    const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: auth } },
+    });
+    const { data: { user } } = await supa.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const amount = PLAN_PRICES[plan];
+    const orderResp = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Basic " + btoa(`${KEY_ID}:${KEY_SECRET}`),
+      },
+      body: JSON.stringify({
+        amount,
+        currency: "INR",
+        notes: { user_id: user.id, plan },
+      }),
+    });
+    if (!orderResp.ok) throw new Error(`Razorpay: ${await orderResp.text()}`);
+    const order = await orderResp.json();
+
+    // Use service role to insert (bypasses RLS but we still scope to user)
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    await admin.from("payments").insert({
+      user_id: user.id, razorpay_order_id: order.id, amount, currency: "INR", plan, status: "created",
+    });
+
+    return new Response(JSON.stringify({
+      order_id: order.id, amount, currency: "INR", key_id: KEY_ID,
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (e) {
+    console.error(e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+});
