@@ -1,0 +1,39 @@
+import { Logo } from "./Logo";
+import { Link } from "react-router-dom";
+
+export function SiteFooter() {
+  return (
+    <footer className="border-t mt-24">
+      <div className="container py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="col-span-2">
+          <Logo />
+          <p className="text-sm text-muted-foreground mt-4 max-w-xs">
+            Build ATS-friendly resumes powered by AI. Land interviews faster.
+          </p>
+        </div>
+        <div>
+          <div className="font-medium mb-3 text-sm">Product</div>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+            <li><Link to="/#features" className="hover:text-foreground">Features</Link></li>
+            <li><Link to="/#templates" className="hover:text-foreground">Templates</Link></li>
+          </ul>
+        </div>
+        <div>
+          <div className="font-medium mb-3 text-sm">Account</div>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
+            <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
+            <li><Link to="/billing" className="hover:text-foreground">Billing</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div className="border-t">
+        <div className="container py-6 text-xs text-muted-foreground flex justify-between">
+          <span>© {new Date().getFullYear()} Resumely. All rights reserved.</span>
+          <span>Crafted with care.</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
