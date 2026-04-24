@@ -95,24 +95,30 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          phone: string | null
           plan: Database["public"]["Enums"]["app_plan"]
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id: string
+          phone?: string | null
           plan?: Database["public"]["Enums"]["app_plan"]
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          phone?: string | null
           plan?: Database["public"]["Enums"]["app_plan"]
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -250,6 +256,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_phone_by_username: { Args: { _username: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
