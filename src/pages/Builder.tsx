@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Logo } from "@/components/Logo";
-import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -65,6 +65,11 @@ export default function Builder() {
 
   const exportPDF = async () => {
     if (!previewRef.current) return;
+    if (profile?.plan !== "pro" && profile?.plan !== "premium") {
+      toast.error("PDF download is a Pro feature — upgrade to download.");
+      navigate("/pricing");
+      return;
+    }
     setExporting(true);
     try {
       const canvas = await html2canvas(previewRef.current, { scale: 2, backgroundColor: "#ffffff" });
@@ -158,10 +163,17 @@ export default function Builder() {
                 <SelectItem value="executive">Executive ★</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={exportPDF} disabled={exporting} className="bg-gradient-primary text-primary-foreground hover:opacity-90" size="sm">
-              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              <span className="ml-1.5 hidden sm:inline">PDF</span>
-            </Button>
+            {profile?.plan === "pro" || profile?.plan === "premium" ? (
+              <Button onClick={exportPDF} disabled={exporting} className="bg-gradient-primary text-primary-foreground hover:opacity-90" size="sm">
+                {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                <span className="ml-1.5 hidden sm:inline">PDF</span>
+              </Button>
+            ) : (
+              <Button onClick={() => navigate("/pricing")} className="bg-gradient-primary text-primary-foreground hover:opacity-90" size="sm">
+                <Lock className="h-4 w-4" />
+                <span className="ml-1.5 hidden sm:inline">Download (Pro)</span>
+              </Button>
+            )}
           </div>
         </div>
       </header>
