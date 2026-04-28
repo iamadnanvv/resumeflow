@@ -22,7 +22,7 @@ export function SiteFooter() {
         <div>
           <div className="font-medium mb-3 text-sm">Account</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
+            <li><Link to="/dashboard" className="hover:text-foreground">Sign in</Link></li>
             <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
             <li><Link to="/billing" className="hover:text-foreground">Billing</Link></li>
           </ul>
