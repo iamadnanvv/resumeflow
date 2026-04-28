@@ -29,9 +29,19 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t">
-        <div className="container py-6 text-xs text-muted-foreground flex justify-between">
+        <div className="container py-6 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
           <span>© {new Date().getFullYear()} Resumely. All rights reserved.</span>
-          <span>Crafted with care.</span>
+          <span>
+            This platform is developed by{" "}
+            <a
+              href="https://www.linkedin.com/in/muhammedadnanvv/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              Muhammed Adnan Vv
+            </a>
+          </span>
         </div>
       </div>
     </footer>
