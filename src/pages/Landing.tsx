@@ -7,11 +7,17 @@ import { ArrowRight, Check, Sparkles, FileText, Zap, Shield, Layers, Bot } from 
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { sampleResume } from "@/lib/resume-types";
 import { Onboarding } from "@/components/Onboarding";
+import { Seo } from "@/components/Seo";
 
 export default function Landing() {
   const [obOpen, setObOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col">
+      <Seo
+        title="Resumely — AI Resume Builder for ATS-Friendly Resumes"
+        description="Build resumes that beat the bots. AI rewriting, real-time ATS scoring, premium templates, and one-click PDF export. Start free."
+        path="/"
+      />
       <SiteHeader />
 
       {/* Hero */}

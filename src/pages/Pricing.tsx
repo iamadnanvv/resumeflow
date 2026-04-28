@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -92,6 +93,11 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Seo
+        title="Pricing — Resumely AI Resume Builder"
+        description="Simple pricing for Resumely. Free forever for basic resumes. Pro at ₹499/mo for unlimited PDF downloads, AI rewriting, and premium templates."
+        path="/pricing"
+      />
       <SiteHeader />
       <main className="flex-1 container py-20">
         <div className="text-center max-w-2xl mx-auto">
