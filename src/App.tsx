@@ -11,6 +11,9 @@ import CoverLetter from "./pages/CoverLetter";
 import Pricing from "./pages/Pricing";
 import Billing from "./pages/Billing";
 import Admin from "./pages/Admin";
+import AtsResume from "./pages/seo/AtsResume";
+import ResumeBuilder from "./pages/seo/ResumeBuilder";
+import CoverLetterGenerator from "./pages/seo/CoverLetterGenerator";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/ats-resume" element={<AtsResume />} />
+            <Route path="/resume-builder" element={<ResumeBuilder />} />
+            <Route path="/cover-letter-generator" element={<CoverLetterGenerator />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/builder/:id" element={<Builder />} />
             <Route path="/cover-letter/:id" element={<CoverLetter />} />
