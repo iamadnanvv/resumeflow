@@ -46,7 +46,7 @@ export default function Pricing() {
     });
 
   const upgrade = async (planId: string) => {
-    if (!user) { navigate("/auth?mode=signup"); return; }
+    if (!user) { navigate("/dashboard"); return; }
     if (planId === "free") { navigate("/dashboard"); return; }
     setLoadingPlan(planId);
     try {

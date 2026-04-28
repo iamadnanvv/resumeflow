@@ -28,7 +28,7 @@ export default function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button size="lg" asChild className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-6">
-                <Link to="/auth?mode=signup">Build my resume <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+                <Link to="/dashboard">Build my resume <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="h-12 px-6">
                 <Link to="/pricing">See pricing</Link>
@@ -102,7 +102,7 @@ export default function Landing() {
               </div>
               <div className="p-4 border-t flex items-center justify-between">
                 <span className="font-medium capitalize">{t}</span>
-                <Button asChild size="sm" variant="ghost"><Link to="/auth?mode=signup">Use</Link></Button>
+                <Button asChild size="sm" variant="ghost"><Link to="/dashboard">Use</Link></Button>
               </div>
             </div>
           ))}
@@ -117,7 +117,7 @@ export default function Landing() {
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Your next role is one resume away.</h2>
             <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Join thousands of candidates who built their resumes with Resumely and got interviews at top companies.</p>
             <Button asChild size="lg" className="mt-8 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-8">
-              <Link to="/auth?mode=signup">Start free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+              <Link to="/dashboard">Start free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
             </Button>
           </div>
         </div>
