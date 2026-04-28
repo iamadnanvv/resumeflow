@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +13,10 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function SiteHeader() {
-  const { user, profile, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const initials = (profile?.full_name || user?.email || "?")
+  const initials = (profile?.full_name || "Guest")
     .split(" ")
     .map((p) => p[0])
     .slice(0, 2)
@@ -35,12 +35,13 @@ export function SiteHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          {user ? (
-            <>
+          {user && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="hidden sm:inline-flex">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
                 Dashboard
               </Button>
+          )}
+          {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="rounded-full ring-1 ring-border hover:ring-primary/50 transition">
@@ -53,8 +54,7 @@ export function SiteHeader() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-2 text-xs">
-                    <div className="font-medium">{profile?.full_name || "Account"}</div>
-                    <div className="text-muted-foreground truncate">{user.email}</div>
+                    <div className="font-medium">{profile?.full_name || "Guest"}</div>
                     <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-0.5 text-primary font-medium">
                       {profile?.plan?.toUpperCase() || "FREE"}
                     </div>
@@ -71,22 +71,8 @@ export function SiteHeader() {
                       <Shield className="h-4 w-4 mr-2" /> Admin
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" /> Sign out
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
-                Sign in
-              </Button>
-              <Button size="sm" onClick={() => navigate("/auth?mode=signup")} className="bg-gradient-primary hover:opacity-90 text-primary-foreground shadow-elegant">
-                Start free
-              </Button>
-            </>
           )}
         </div>
       </div>

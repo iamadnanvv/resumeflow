@@ -49,10 +49,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+      if (!s) {
+        // Auto sign-in anonymously so RLS, payments, and edge functions keep working
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error) console.error("Anonymous sign-in failed:", error);
+        s = data?.session ?? null;
+      }
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) loadExtras(s.user.id);
+      if (s?.user) await loadExtras(s.user.id);
       setLoading(false);
     });
 
