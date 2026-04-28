@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -5,8 +6,10 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Sparkles, FileText, Zap, Shield, Layers, Bot } from "lucide-react";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { sampleResume } from "@/lib/resume-types";
+import { Onboarding } from "@/components/Onboarding";
 
 export default function Landing() {
+  const [obOpen, setObOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -27,17 +30,17 @@ export default function Landing() {
               Build interview-ready resumes in minutes. Premium templates, AI rewriting, instant ATS scoring, and one-click PDF export.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" asChild className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-6">
-                <Link to="/dashboard">Build my resume <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+              <Button size="lg" onClick={() => setObOpen(true)} className="bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-6">
+                Build my resume <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline" asChild className="h-12 px-6">
                 <Link to="/pricing">See pricing</Link>
               </Button>
             </div>
             <div className="mt-8 flex flex-wrap gap-6 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" /> Free forever plan</span>
+              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" /> Free to build</span>
               <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" /> No credit card</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" /> Export unlimited</span>
+              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" /> PDF export with Pro</span>
             </div>
           </div>
           <div className="relative animate-fade-in" style={{ animationDelay: "150ms" }}>
@@ -102,7 +105,7 @@ export default function Landing() {
               </div>
               <div className="p-4 border-t flex items-center justify-between">
                 <span className="font-medium capitalize">{t}</span>
-                <Button asChild size="sm" variant="ghost"><Link to="/dashboard">Use</Link></Button>
+                <Button size="sm" variant="ghost" onClick={() => setObOpen(true)}>Use</Button>
               </div>
             </div>
           ))}
@@ -116,14 +119,15 @@ export default function Landing() {
           <div className="relative">
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Your next role is one resume away.</h2>
             <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Join thousands of candidates who built their resumes with Resumely and got interviews at top companies.</p>
-            <Button asChild size="lg" className="mt-8 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-8">
-              <Link to="/dashboard">Start free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+            <Button size="lg" onClick={() => setObOpen(true)} className="mt-8 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-8">
+              Start free <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </div>
       </section>
 
       <SiteFooter />
+      <Onboarding open={obOpen} onOpenChange={setObOpen} />
     </div>
   );
 }
