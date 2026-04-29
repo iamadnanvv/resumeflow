@@ -6,8 +6,11 @@ import { Check, Sparkles, GraduationCap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { StudentVerifyDialog } from "@/components/StudentVerifyDialog";
+
+const STUDENT_PLAN_IDS = new Set(["student_basic", "student_premium", "student_pro"]);
 
 const PLANS = [
   {
@@ -57,6 +60,25 @@ export default function Pricing() {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [pendingStudentPlan, setPendingStudentPlan] = useState<string | null>(null);
+  const [isVerifiedStudent, setIsVerifiedStudent] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!user) { setIsVerifiedStudent(false); return; }
+      const { data } = await supabase
+        .from("student_verifications")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("verified", true)
+        .limit(1)
+        .maybeSingle();
+      if (active) setIsVerifiedStudent(!!data);
+    })();
+    return () => { active = false; };
+  }, [user]);
 
   const loadRazorpay = () =>
     new Promise<boolean>((resolve) => {
@@ -70,6 +92,14 @@ export default function Pricing() {
   const upgrade = async (planId: string) => {
     if (!user) { navigate("/dashboard"); return; }
     if (planId === "free") { navigate("/dashboard"); return; }
+
+    // Gate: student plans require verification
+    if (STUDENT_PLAN_IDS.has(planId) && !isVerifiedStudent) {
+      setPendingStudentPlan(planId);
+      setVerifyOpen(true);
+      return;
+    }
+
     setLoadingPlan(planId);
     try {
       const ok = await loadRazorpay();
