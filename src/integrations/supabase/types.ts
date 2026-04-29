@@ -158,6 +158,45 @@ export type Database = {
         }
         Relationships: []
       }
+      student_verifications: {
+        Row: {
+          attempts: number
+          code_hash: string | null
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          verified: boolean
+          verified_at: string | null
+        }
+        Insert: {
+          attempts?: number
+          code_hash?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -264,6 +303,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_verified_student: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_plan:
