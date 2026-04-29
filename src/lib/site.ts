@@ -2,11 +2,11 @@
 // Override at runtime/build by setting VITE_SITE_URL.
 export const SITE_URL = (
   import.meta.env.VITE_SITE_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "https://resumely.app")
+  (typeof window !== "undefined" ? window.location.origin : "https://resumelylite.app")
 ).replace(/\/$/, "");
 
-export const SITE_NAME = "Resumely";
-export const TWITTER_HANDLE = "@resumely";
+export const SITE_NAME = "resumelylite";
+export const TWITTER_HANDLE = "@resumelylite";
 
 export const canonical = (path: string) => {
   const p = path.startsWith("/") ? path : `/${path}`;

@@ -9,7 +9,7 @@ export default function AtsResume() {
       eyebrow="ATS Resume"
       h1="An ATS resume that actually beats the bots."
       highlight="beats the bots"
-      intro="Most resumes never reach a recruiter — Applicant Tracking Systems filter them out first. Resumely scores your resume against ATS rules in real time and shows exactly what to fix."
+      intro="Most resumes never reach a recruiter — Applicant Tracking Systems filter them out first. resumelylite scores your resume against ATS rules in real time and shows exactly what to fix."
       benefits={[
         "Live ATS score from 0–100 with actionable tips",
         "Single-column, machine-readable templates",
@@ -30,14 +30,14 @@ export default function AtsResume() {
                 to filter candidates before any human reads their resume.
               </p>
               <p>
-                Resumely templates use single-column layouts, standard fonts, real text (not
+                resumelylite templates use single-column layouts, standard fonts, real text (not
                 images), and the section headings that ATS parsers are trained to recognize.
               </p>
             </>
           ),
         },
         {
-          heading: "How Resumely's ATS scoring works",
+          heading: "How resumelylite's ATS scoring works",
           body: (
             <p>
               Every edit you make is scored live across six dimensions: contact completeness,
@@ -50,12 +50,12 @@ export default function AtsResume() {
       ]}
       faq={[
         {
-          q: "Will my Resumely PDF pass an ATS?",
+          q: "Will my resumelylite PDF pass an ATS?",
           a: "Yes. All templates export as text-layer PDFs with standard fonts and a single-column structure that the major ATS engines (Workday, Greenhouse, Lever, iCIMS, Taleo) parse cleanly.",
         },
         {
           q: "Do I need to add keywords manually?",
-          a: "No — paste a job description into the builder and Resumely highlights the keywords missing from your resume so you can add them naturally to your bullets.",
+          a: "No — paste a job description into the builder and resumelylite highlights the keywords missing from your resume so you can add them naturally to your bullets.",
         },
         {
           q: "Is the ATS scoring free?",

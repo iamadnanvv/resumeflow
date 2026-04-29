@@ -55,8 +55,8 @@ export function SeoLanding({
       "@type": "WebPage",
       name: metaTitle,
       description: metaDescription,
-      url: `https://resumely.app${path}`,
-      isPartOf: { "@type": "WebSite", name: "Resumely", url: "https://resumely.app/" },
+      url: `https://resumelylite.app${path}`,
+      isPartOf: { "@type": "WebSite", name: "resumelylite", url: "https://resumelylite.app/" },
     },
     {
       "@context": "https://schema.org",
@@ -71,8 +71,8 @@ export function SeoLanding({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://resumely.app/" },
-        { "@type": "ListItem", position: 2, name: eyebrow, item: `https://resumely.app${path}` },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://resumelylite.app/" },
+        { "@type": "ListItem", position: 2, name: eyebrow, item: `https://resumelylite.app${path}` },
       ],
     },
   ];

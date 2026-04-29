@@ -61,7 +61,7 @@ export default function Pricing() {
         key: data.key_id,
         amount: data.amount,
         currency: data.currency,
-        name: "Resumely",
+        name: "resumelylite",
         description: `${planId.toUpperCase()} plan`,
         order_id: data.order_id,
         prefill: { email: user.email, name: profile?.full_name || "" },
@@ -94,8 +94,8 @@ export default function Pricing() {
   return (
     <div className="min-h-screen flex flex-col">
       <Seo
-        title="Pricing — Resumely AI Resume Builder"
-        description="Simple pricing for Resumely. Free forever for basic resumes. Pro at ₹499/mo for unlimited PDF downloads, AI rewriting, and premium templates."
+        title="Pricing — resumelylite AI Resume Builder"
+        description="Simple pricing for resumelylite. Free forever for basic resumes. Pro at ₹499/mo for unlimited PDF downloads, AI rewriting, and premium templates."
         path="/pricing"
       />
       <SiteHeader />

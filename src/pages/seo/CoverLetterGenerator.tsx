@@ -9,11 +9,11 @@ export default function CoverLetterGenerator() {
       eyebrow="Cover Letter Generator"
       h1="A tailored cover letter for every job — in seconds."
       highlight="in seconds"
-      intro="Stop rewriting the same cover letter from scratch. Paste a job description, choose a tone, and Resumely generates a personalized, ATS-friendly letter that actually sounds like you."
+      intro="Stop rewriting the same cover letter from scratch. Paste a job description, choose a tone, and resumelylite generates a personalized, ATS-friendly letter that actually sounds like you."
       benefits={[
         "Personalized to the company and role you're targeting",
         "Three tones: confident, conversational, formal",
-        "Pulls in your real experience from your Resumely resume",
+        "Pulls in your real experience from your resumelylite resume",
         "ATS-safe formatting that matches your resume design",
         "Edit any line — AI suggestions are starting points, not lock-ins",
         "PDF export with Pro",
@@ -23,7 +23,7 @@ export default function CoverLetterGenerator() {
           heading: "How the cover letter generator works",
           body: (
             <p>
-              Drop in the job title, company name, and a paste of the job description. Resumely
+              Drop in the job title, company name, and a paste of the job description. resumelylite
               combines those signals with your resume content to produce a one-page letter that
               opens strong, mirrors the role's keywords, and closes with a clear call to action.
             </p>
@@ -35,7 +35,7 @@ export default function CoverLetterGenerator() {
             <p>
               Recruiters see your resume and cover letter side by side. When the design language
               matches — same font pairing, same accent color, same hierarchy — your application
-              looks intentional. Resumely keeps both in lockstep automatically.
+              looks intentional. resumelylite keeps both in lockstep automatically.
             </p>
           ),
         },
