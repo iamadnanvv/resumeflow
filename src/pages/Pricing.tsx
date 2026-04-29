@@ -212,6 +212,19 @@ export default function Pricing() {
             <p className="mt-4 text-muted-foreground">
               Up to 60% off regular pricing for verified students. Use your campus email at checkout.
             </p>
+            <div className="mt-5 flex items-center justify-center gap-2">
+              {user && isVerifiedStudent ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                  <Check className="h-3 w-3" /> Student status verified
+                </span>
+              ) : user ? (
+                <Button size="sm" variant="outline" onClick={() => { setPendingStudentPlan(null); setVerifyOpen(true); }}>
+                  Verify student status
+                </Button>
+              ) : (
+                <span className="text-xs text-muted-foreground">Sign in to verify your student email.</span>
+              )}
+            </div>
           </div>
 
           <div className="mt-12 grid md:grid-cols-3 gap-6">
@@ -267,6 +280,19 @@ export default function Pricing() {
         </section>
       </main>
       <SiteFooter />
+      <StudentVerifyDialog
+        open={verifyOpen}
+        onOpenChange={setVerifyOpen}
+        onVerified={() => {
+          setIsVerifiedStudent(true);
+          if (pendingStudentPlan) {
+            const planId = pendingStudentPlan;
+            setPendingStudentPlan(null);
+            // Brief delay so the dialog can fully close before opening Razorpay
+            setTimeout(() => upgrade(planId), 200);
+          }
+        }}
+      />
     </div>
   );
 }
