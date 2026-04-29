@@ -9,7 +9,7 @@ export default function ResumeBuilder() {
       eyebrow="Resume Builder"
       h1="The fastest AI resume builder for professionals."
       highlight="AI resume builder"
-      intro="Skip the blank-page paralysis. Resumely's AI writes your summary, improves your bullets, and structures your experience — all while you watch the live preview update."
+      intro="Skip the blank-page paralysis. resumelylite's AI writes your summary, improves your bullets, and structures your experience — all while you watch the live preview update."
       benefits={[
         "AI-written summaries tuned to your target role",
         "One-click bullet rewrites with measurable impact",
@@ -33,7 +33,7 @@ export default function ResumeBuilder() {
           heading: "Templates that recruiters actually like",
           body: (
             <p>
-              Every Resumely template is built with hiring managers in mind: clear hierarchy,
+              Every resumelylite template is built with hiring managers in mind: clear hierarchy,
               generous whitespace, scannable headings, and zero distractions. Switch templates any
               time without losing your content — your data is stored separately from the design.
             </p>
@@ -47,7 +47,7 @@ export default function ResumeBuilder() {
         },
         {
           q: "How does the AI rewriting work?",
-          a: "Resumely uses Google Gemini and OpenAI GPT models to rewrite your bullets into stronger, results-oriented copy. Nothing is shared with third parties beyond the model call.",
+          a: "resumelylite uses Google Gemini and OpenAI GPT models to rewrite your bullets into stronger, results-oriented copy. Nothing is shared with third parties beyond the model call.",
         },
         {
           q: "Can I switch between templates?",

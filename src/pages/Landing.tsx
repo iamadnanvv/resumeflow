@@ -14,7 +14,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col">
       <Seo
-        title="Resumely — AI Resume Builder for ATS-Friendly Resumes"
+        title="resumelylite — AI Resume Builder for ATS-Friendly Resumes"
         description="Build resumes that beat the bots. AI rewriting, real-time ATS scoring, premium templates, and one-click PDF export. Start free."
         path="/"
       />
@@ -71,7 +71,7 @@ export default function Landing() {
       {/* Features */}
       <section id="features" className="container py-24">
         <div className="max-w-2xl">
-          <div className="text-xs uppercase tracking-widest text-primary mb-3 font-medium">Why Resumely</div>
+          <div className="text-xs uppercase tracking-widest text-primary mb-3 font-medium">Why resumelylite</div>
           <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Everything to land the interview.</h2>
           <p className="mt-4 text-muted-foreground">A complete toolkit, not just templates. Built with the same craft as the products you're applying to.</p>
         </div>
@@ -124,7 +124,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-gradient-primary opacity-10" />
           <div className="relative">
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Your next role is one resume away.</h2>
-            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Join thousands of candidates who built their resumes with Resumely and got interviews at top companies.</p>
+            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Join thousands of candidates who built their resumes with resumelylite and got interviews at top companies.</p>
             <Button size="lg" onClick={() => setObOpen(true)} className="mt-8 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-8">
               Start free <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
