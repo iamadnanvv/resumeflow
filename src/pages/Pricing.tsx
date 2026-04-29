@@ -62,7 +62,7 @@ export default function Pricing() {
         amount: data.amount,
         currency: data.currency,
         name: "resumelylite",
-        description: `${planId.toUpperCase()} plan`,
+        description: `resumelylite ${planId.toUpperCase()} plan`,
         order_id: data.order_id,
         prefill: { email: user.email, name: profile?.full_name || "" },
         theme: { color: "#10b981" },

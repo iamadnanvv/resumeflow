@@ -38,7 +38,13 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         amount,
         currency: "INR",
-        notes: { user_id: user.id, plan },
+        receipt: `rlite_${plan}_${Date.now()}`,
+        notes: {
+          user_id: user.id,
+          plan,
+          brand: "resumelylite",
+          product: `resumelylite ${plan.toUpperCase()} plan`,
+        },
       }),
     });
     if (!orderResp.ok) throw new Error(`Razorpay: ${await orderResp.text()}`);
