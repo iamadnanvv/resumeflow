@@ -6,8 +6,11 @@ import { Check, Sparkles, GraduationCap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { StudentVerifyDialog } from "@/components/StudentVerifyDialog";
+
+const STUDENT_PLAN_IDS = new Set(["student_basic", "student_premium", "student_pro"]);
 
 const PLANS = [
   {
@@ -57,6 +60,25 @@ export default function Pricing() {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [pendingStudentPlan, setPendingStudentPlan] = useState<string | null>(null);
+  const [isVerifiedStudent, setIsVerifiedStudent] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!user) { setIsVerifiedStudent(false); return; }
+      const { data } = await supabase
+        .from("student_verifications")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("verified", true)
+        .limit(1)
+        .maybeSingle();
+      if (active) setIsVerifiedStudent(!!data);
+    })();
+    return () => { active = false; };
+  }, [user]);
 
   const loadRazorpay = () =>
     new Promise<boolean>((resolve) => {
@@ -70,6 +92,14 @@ export default function Pricing() {
   const upgrade = async (planId: string) => {
     if (!user) { navigate("/dashboard"); return; }
     if (planId === "free") { navigate("/dashboard"); return; }
+
+    // Gate: student plans require verification
+    if (STUDENT_PLAN_IDS.has(planId) && !isVerifiedStudent) {
+      setPendingStudentPlan(planId);
+      setVerifyOpen(true);
+      return;
+    }
+
     setLoadingPlan(planId);
     try {
       const ok = await loadRazorpay();
@@ -182,6 +212,19 @@ export default function Pricing() {
             <p className="mt-4 text-muted-foreground">
               Up to 60% off regular pricing for verified students. Use your campus email at checkout.
             </p>
+            <div className="mt-5 flex items-center justify-center gap-2">
+              {user && isVerifiedStudent ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                  <Check className="h-3 w-3" /> Student status verified
+                </span>
+              ) : user ? (
+                <Button size="sm" variant="outline" onClick={() => { setPendingStudentPlan(null); setVerifyOpen(true); }}>
+                  Verify student status
+                </Button>
+              ) : (
+                <span className="text-xs text-muted-foreground">Sign in to verify your student email.</span>
+              )}
+            </div>
           </div>
 
           <div className="mt-12 grid md:grid-cols-3 gap-6">
@@ -237,6 +280,19 @@ export default function Pricing() {
         </section>
       </main>
       <SiteFooter />
+      <StudentVerifyDialog
+        open={verifyOpen}
+        onOpenChange={setVerifyOpen}
+        onVerified={() => {
+          setIsVerifiedStudent(true);
+          if (pendingStudentPlan) {
+            const planId = pendingStudentPlan;
+            setPendingStudentPlan(null);
+            // Brief delay so the dialog can fully close before opening Razorpay
+            setTimeout(() => upgrade(planId), 200);
+          }
+        }}
+      />
     </div>
   );
 }
