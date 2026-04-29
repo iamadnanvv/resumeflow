@@ -13,6 +13,8 @@ const PLAN_PRICES: Record<string, number> = {
   student_pro: 39900,
 }; // paise
 
+const STUDENT_PLANS = new Set(["student_basic", "student_premium", "student_pro"]);
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -33,6 +35,24 @@ Deno.serve(async (req) => {
     });
     const { data: { user } } = await supa.auth.getUser();
     if (!user) throw new Error("Unauthorized");
+
+    // Server-side gate: student plans require a verified student record
+    if (STUDENT_PLANS.has(plan)) {
+      const admin0 = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      const { data: verified } = await admin0
+        .from("student_verifications")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("verified", true)
+        .limit(1)
+        .maybeSingle();
+      if (!verified) {
+        return new Response(JSON.stringify({
+          error: "Student verification required. Verify your campus email to access student pricing.",
+          code: "student_verification_required",
+        }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    }
 
     const amount = PLAN_PRICES[plan];
     const orderResp = await fetch("https://api.razorpay.com/v1/orders", {
