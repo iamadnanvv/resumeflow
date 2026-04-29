@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, GraduationCap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +27,27 @@ const PLANS = [
     tagline: "Unlimited everything",
     features: ["Unlimited resumes", "All Pro features", "Unlimited cover letters", "Resume review by AI", "Priority AI processing", "Early access to new templates"],
     cta: "Go Premium",
+  },
+];
+
+const STUDENT_PLANS = [
+  {
+    id: "student_basic", name: "Student Basic", price: 199, currency: "₹",
+    tagline: "For first-time job seekers",
+    features: ["3 resumes", "All standard templates", "PDF export", "Basic ATS score", "Email support"],
+    cta: "Get Student Basic",
+  },
+  {
+    id: "student_premium", name: "Student Premium", price: 299, currency: "₹", popular: true,
+    tagline: "Most popular for students",
+    features: ["10 resumes", "All templates incl. premium", "AI rewriting (50/mo)", "5 cover letters / mo", "Advanced ATS scoring"],
+    cta: "Get Student Premium",
+  },
+  {
+    id: "student_pro", name: "Student Pro", price: 399, currency: "₹",
+    tagline: "Everything for campus placements",
+    features: ["Unlimited resumes", "Unlimited AI rewriting", "Unlimited cover letters", "Resume review by AI", "Priority support"],
+    cta: "Get Student Pro",
   },
 ];
 
@@ -148,6 +169,72 @@ export default function Pricing() {
         <p className="text-center text-xs text-muted-foreground mt-10">
           Payments processed securely by Razorpay. UPI, cards & netbanking supported.
         </p>
+
+        {/* Student Offer Program */}
+        <section id="students" className="mt-24 max-w-5xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-6">
+              <GraduationCap className="h-3 w-3" /> Student Offer Program
+            </div>
+            <h2 className="font-display text-4xl font-semibold tracking-tight">
+              Built for students. <span className="text-gradient">Priced for students.</span>
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Up to 60% off regular pricing for verified students. Use your campus email at checkout.
+            </p>
+          </div>
+
+          <div className="mt-12 grid md:grid-cols-3 gap-6">
+            {STUDENT_PLANS.map((p) => {
+              const isCurrent = profile?.plan === p.id;
+              return (
+                <div
+                  key={p.id}
+                  className={`relative rounded-2xl p-8 border ${
+                    p.popular ? "border-primary/40 bg-gradient-card shadow-glow" : "bg-card"
+                  }`}
+                >
+                  {p.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                      Most popular
+                    </div>
+                  )}
+                  <div className="text-sm text-muted-foreground">{p.tagline}</div>
+                  <div className="font-display text-2xl font-semibold mt-1">{p.name}</div>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-display font-semibold">
+                      {p.currency}
+                      {p.price}
+                    </span>
+                    <span className="text-muted-foreground text-sm">/ month</span>
+                  </div>
+                  <Button
+                    className={`w-full mt-6 ${
+                      p.popular ? "bg-gradient-primary text-primary-foreground hover:opacity-90" : ""
+                    }`}
+                    variant={p.popular ? "default" : "outline"}
+                    disabled={isCurrent || loadingPlan === p.id}
+                    onClick={() => upgrade(p.id)}
+                  >
+                    {isCurrent ? "Current plan" : loadingPlan === p.id ? "Loading…" : p.cta}
+                  </Button>
+                  <ul className="mt-6 space-y-2.5">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm">
+                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            Student pricing requires a valid .edu / campus email. We may request verification.
+          </p>
+        </section>
       </main>
       <SiteFooter />
     </div>
