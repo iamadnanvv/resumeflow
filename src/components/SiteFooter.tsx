@@ -38,7 +38,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t">
         <div className="container py-6 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
-          <span>© {new Date().getFullYear()} Resumely. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} resumelylite. All rights reserved.</span>
           <span>
             This platform is developed by{" "}
             <a

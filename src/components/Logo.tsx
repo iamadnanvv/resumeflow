@@ -11,7 +11,7 @@ export function Logo({ size = "default" }: { size?: "default" | "sm" }) {
         </div>
       </div>
       <span className={`font-display font-semibold tracking-tight ${size === "sm" ? "text-base" : "text-xl"}`}>
-        Resume<span className="text-primary">ly</span>
+        resumely<span className="text-primary">lite</span>
       </span>
     </Link>
   );
