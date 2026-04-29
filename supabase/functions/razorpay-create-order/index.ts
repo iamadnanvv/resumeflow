@@ -5,7 +5,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PLAN_PRICES: Record<string, number> = { pro: 49900, premium: 99900 }; // paise
+const PLAN_PRICES: Record<string, number> = {
+  pro: 49900,
+  premium: 99900,
+  student_basic: 19900,
+  student_premium: 29900,
+  student_pro: 39900,
+}; // paise
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

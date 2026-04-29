@@ -266,7 +266,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_plan: "free" | "pro" | "premium"
+      app_plan:
+        | "free"
+        | "pro"
+        | "premium"
+        | "student_basic"
+        | "student_premium"
+        | "student_pro"
       app_role: "admin" | "user"
       payment_status: "created" | "paid" | "failed" | "refunded"
       subscription_status: "active" | "cancelled" | "expired" | "pending"
@@ -397,7 +403,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_plan: ["free", "pro", "premium"],
+      app_plan: [
+        "free",
+        "pro",
+        "premium",
+        "student_basic",
+        "student_premium",
+        "student_pro",
+      ],
       app_role: ["admin", "user"],
       payment_status: ["created", "paid", "failed", "refunded"],
       subscription_status: ["active", "cancelled", "expired", "pending"],
