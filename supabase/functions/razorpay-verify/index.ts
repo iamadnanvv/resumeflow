@@ -44,6 +44,40 @@ Deno.serve(async (req) => {
       current_period_end: periodEnd.toISOString(),
     });
 
+    // Referral payout: if this user was referred and referral is pending, credit referrer ₹100
+    try {
+      const { data: ref } = await admin
+        .from("referrals")
+        .select("id, referrer_id, status")
+        .eq("referee_id", user.id)
+        .eq("status", "pending")
+        .maybeSingle();
+      if (ref) {
+        const REWARD = 100; // INR
+        await admin.from("referrals").update({
+          status: "rewarded",
+          reward_amount: REWARD,
+          rewarded_at: new Date().toISOString(),
+        }).eq("id", ref.id);
+
+        // Upsert credits for referrer
+        const { data: existing } = await admin
+          .from("user_credits").select("balance,lifetime_earned").eq("user_id", ref.referrer_id).maybeSingle();
+        if (existing) {
+          await admin.from("user_credits").update({
+            balance: (existing.balance ?? 0) + REWARD,
+            lifetime_earned: (existing.lifetime_earned ?? 0) + REWARD,
+          }).eq("user_id", ref.referrer_id);
+        } else {
+          await admin.from("user_credits").insert({
+            user_id: ref.referrer_id, balance: REWARD, lifetime_earned: REWARD,
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Referral payout failed:", e);
+    }
+
     return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error(e);

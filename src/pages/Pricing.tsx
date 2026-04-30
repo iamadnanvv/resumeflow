@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, GraduationCap } from "lucide-react";
+import { Check, Sparkles, GraduationCap, BookOpen } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { StudentVerifyDialog } from "@/components/StudentVerifyDialog";
 
 const STUDENT_PLAN_IDS = new Set(["student_basic", "student_premium", "student_pro"]);
+const TEACHER_PLAN_IDS = new Set(["teacher_basic", "teacher_premium", "teacher_pro"]);
 
 const PLANS = [
   {
@@ -54,6 +55,27 @@ const STUDENT_PLANS = [
   },
 ];
 
+const TEACHER_PLANS = [
+  {
+    id: "teacher_basic", name: "Teacher Basic", price: 299, currency: "₹",
+    tagline: "For new educators",
+    features: ["5 resumes / CVs", "Academic CV templates", "PDF export", "Cover letter (3/mo)", "Email support"],
+    cta: "Get Teacher Basic",
+  },
+  {
+    id: "teacher_premium", name: "Teacher Premium", price: 499, currency: "₹", popular: true,
+    tagline: "Most popular for faculty",
+    features: ["15 resumes / CVs", "All academic templates", "AI rewriting (100/mo)", "Unlimited cover letters", "Advanced ATS scoring"],
+    cta: "Get Teacher Premium",
+  },
+  {
+    id: "teacher_pro", name: "Teacher Pro", price: 699, currency: "₹",
+    tagline: "For department heads & researchers",
+    features: ["Unlimited resumes / CVs", "Unlimited AI rewriting", "Publication & grants sections", "Resume review by AI", "Priority support"],
+    cta: "Get Teacher Pro",
+  },
+];
+
 declare global { interface Window { Razorpay?: any } }
 
 export default function Pricing() {
@@ -63,19 +85,23 @@ export default function Pricing() {
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [pendingStudentPlan, setPendingStudentPlan] = useState<string | null>(null);
   const [isVerifiedStudent, setIsVerifiedStudent] = useState(false);
+  const [isVerifiedTeacher, setIsVerifiedTeacher] = useState(false);
+  const [verifyKind, setVerifyKind] = useState<"student" | "teacher">("student");
 
   useEffect(() => {
     let active = true;
     (async () => {
-      if (!user) { setIsVerifiedStudent(false); return; }
+      if (!user) { setIsVerifiedStudent(false); setIsVerifiedTeacher(false); return; }
       const { data } = await supabase
         .from("student_verifications")
-        .select("id")
+        .select("id, kind")
         .eq("user_id", user.id)
-        .eq("verified", true)
-        .limit(1)
-        .maybeSingle();
-      if (active) setIsVerifiedStudent(!!data);
+        .eq("verified", true);
+      if (active) {
+        const rows = (data ?? []) as Array<{ kind?: string }>;
+        setIsVerifiedStudent(rows.some(r => (r.kind ?? "student") === "student"));
+        setIsVerifiedTeacher(rows.some(r => r.kind === "teacher"));
+      }
     })();
     return () => { active = false; };
   }, [user]);
@@ -93,9 +119,16 @@ export default function Pricing() {
     if (!user) { navigate("/dashboard"); return; }
     if (planId === "free") { navigate("/dashboard"); return; }
 
-    // Gate: student plans require verification
+    // Gate: student/teacher plans require verification of matching kind
     if (STUDENT_PLAN_IDS.has(planId) && !isVerifiedStudent) {
       setPendingStudentPlan(planId);
+      setVerifyKind("student");
+      setVerifyOpen(true);
+      return;
+    }
+    if (TEACHER_PLAN_IDS.has(planId) && !isVerifiedTeacher) {
+      setPendingStudentPlan(planId);
+      setVerifyKind("teacher");
       setVerifyOpen(true);
       return;
     }
@@ -218,7 +251,7 @@ export default function Pricing() {
                   <Check className="h-3 w-3" /> Student status verified
                 </span>
               ) : user ? (
-                <Button size="sm" variant="outline" onClick={() => { setPendingStudentPlan(null); setVerifyOpen(true); }}>
+                <Button size="sm" variant="outline" onClick={() => { setPendingStudentPlan(null); setVerifyKind("student"); setVerifyOpen(true); }}>
                   Verify student status
                 </Button>
               ) : (
@@ -278,13 +311,89 @@ export default function Pricing() {
             Student pricing requires a valid .edu / campus email. We may request verification.
           </p>
         </section>
+
+        {/* Teacher Offer Program */}
+        <section id="teachers" className="mt-24 max-w-5xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-6">
+              <BookOpen className="h-3 w-3" /> Teacher & Educator Program
+            </div>
+            <h2 className="font-display text-4xl font-semibold tracking-tight">
+              Built for educators. <span className="text-gradient">Priced fairly.</span>
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Up to 30% off for verified teachers and faculty. Use your campus / school email at checkout.
+            </p>
+            <div className="mt-5 flex items-center justify-center gap-2">
+              {user && isVerifiedTeacher ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                  <Check className="h-3 w-3" /> Teacher status verified
+                </span>
+              ) : user ? (
+                <Button size="sm" variant="outline" onClick={() => { setPendingStudentPlan(null); setVerifyKind("teacher"); setVerifyOpen(true); }}>
+                  Verify teacher status
+                </Button>
+              ) : (
+                <span className="text-xs text-muted-foreground">Sign in to verify your teacher email.</span>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-12 grid md:grid-cols-3 gap-6">
+            {TEACHER_PLANS.map((p) => {
+              const isCurrent = profile?.plan === p.id;
+              return (
+                <div
+                  key={p.id}
+                  className={`relative rounded-2xl p-8 border ${
+                    p.popular ? "border-primary/40 bg-gradient-card shadow-glow" : "bg-card"
+                  }`}
+                >
+                  {p.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                      Most popular
+                    </div>
+                  )}
+                  <div className="text-sm text-muted-foreground">{p.tagline}</div>
+                  <div className="font-display text-2xl font-semibold mt-1">{p.name}</div>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-display font-semibold">{p.currency}{p.price}</span>
+                    <span className="text-muted-foreground text-sm">/ month</span>
+                  </div>
+                  <Button
+                    className={`w-full mt-6 ${p.popular ? "bg-gradient-primary text-primary-foreground hover:opacity-90" : ""}`}
+                    variant={p.popular ? "default" : "outline"}
+                    disabled={isCurrent || loadingPlan === p.id}
+                    onClick={() => upgrade(p.id)}
+                  >
+                    {isCurrent ? "Current plan" : loadingPlan === p.id ? "Loading…" : p.cta}
+                  </Button>
+                  <ul className="mt-6 space-y-2.5">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm">
+                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            Teacher pricing requires a valid school / university email. We may request verification.
+          </p>
+        </section>
       </main>
       <SiteFooter />
       <StudentVerifyDialog
         open={verifyOpen}
         onOpenChange={setVerifyOpen}
+        kind={verifyKind}
         onVerified={() => {
-          setIsVerifiedStudent(true);
+          if (verifyKind === "teacher") setIsVerifiedTeacher(true);
+          else setIsVerifiedStudent(true);
           if (pendingStudentPlan) {
             const planId = pendingStudentPlan;
             setPendingStudentPlan(null);

@@ -4,24 +4,45 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Sparkles, Receipt } from "lucide-react";
+import { Sparkles, Receipt, GraduationCap, Briefcase, BookOpen } from "lucide-react";
+import { toast } from "sonner";
+
+const TYPES = [
+  { id: "student", label: "Student", icon: GraduationCap },
+  { id: "professional", label: "Working professional", icon: Briefcase },
+  { id: "teacher", label: "Teacher / Educator", icon: BookOpen },
+] as const;
 
 export default function Billing() {
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<any[]>([]);
   const [sub, setSub] = useState<any>(null);
+  const [userType, setUserType] = useState<string>("");
+  const [savingType, setSavingType] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { data: s }] = await Promise.all([
+      const [{ data: p }, { data: s }, { data: prof }] = await Promise.all([
         supabase.from("payments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
         supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+        supabase.from("profiles").select("user_type").eq("id", user.id).maybeSingle(),
       ]);
       setPayments(p || []);
       setSub(s);
+      setUserType(((prof as any)?.user_type as string) ?? "");
     })();
   }, [user]);
+
+  const saveType = async (t: string) => {
+    if (!user) return;
+    setSavingType(true);
+    const { error } = await supabase.from("profiles").update({ user_type: t as any }).eq("id", user.id);
+    setSavingType(false);
+    if (error) { toast.error(error.message); return; }
+    setUserType(t);
+    toast.success("Updated");
+  };
 
   return (
     <div className="min-h-screen">
@@ -43,6 +64,33 @@ export default function Billing() {
           <Button asChild variant={profile?.plan === "free" ? "default" : "outline"} className={profile?.plan === "free" ? "bg-gradient-primary text-primary-foreground hover:opacity-90" : ""}>
             <Link to="/pricing">{profile?.plan === "free" ? "Upgrade" : "Change plan"}</Link>
           </Button>
+        </div>
+
+        <div className="mt-6 glass rounded-2xl p-6">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">I am a</div>
+          <div className="mt-3 grid sm:grid-cols-3 gap-2">
+            {TYPES.map((t) => {
+              const Icon = t.icon;
+              const active = userType === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  disabled={savingType}
+                  onClick={() => saveType(t.id)}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition ${
+                    active ? "border-primary bg-primary/5 text-foreground" : "border-border hover:border-primary/40"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                  <span>{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Used to suggest the right pricing (student / teacher discounts) and templates.
+          </p>
         </div>
 
         <div className="mt-10">

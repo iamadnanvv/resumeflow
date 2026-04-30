@@ -14,7 +14,9 @@ import Admin from "./pages/Admin";
 import AtsResume from "./pages/seo/AtsResume";
 import ResumeBuilder from "./pages/seo/ResumeBuilder";
 import CoverLetterGenerator from "./pages/seo/CoverLetterGenerator";
+import Referrals from "./pages/Referrals";
 import { AuthProvider } from "./hooks/useAuth";
+import { ReferralCapture } from "./components/ReferralCapture";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ReferralCapture />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
@@ -36,6 +39,7 @@ const App = () => (
             <Route path="/cover-letter/:id" element={<CoverLetter />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/referrals" element={<Referrals />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

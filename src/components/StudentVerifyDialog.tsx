@@ -7,15 +7,22 @@ import { GraduationCap, MailCheck, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const CAMPUS_RE = /\.(edu|ac)(\.[a-z]{2,})?$/i;
+// Mirrors edge function: .edu, .edu.<cc>, .ac, .ac.<cc>, .sch.<cc>, .sch.ac.<cc>, k12.<state>.us
+const CAMPUS_PATTERNS = [
+  /(^|\.)edu(\.[a-z]{2,})?$/i,
+  /(^|\.)ac(\.[a-z]{2,})?$/i,
+  /(^|\.)sch(\.[a-z]{2,})?$/i,
+  /(^|\.)k12\.[a-z]{2}\.us$/i,
+];
 
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onVerified: () => void;
+  kind?: "student" | "teacher";
 };
 
-export function StudentVerifyDialog({ open, onOpenChange, onVerified }: Props) {
+export function StudentVerifyDialog({ open, onOpenChange, onVerified, kind = "student" }: Props) {
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -33,18 +40,18 @@ export function StudentVerifyDialog({ open, onOpenChange, onVerified }: Props) {
     const trimmed = e.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return false;
     const domain = trimmed.split("@")[1] || "";
-    return CAMPUS_RE.test(domain);
+    return CAMPUS_PATTERNS.some((re) => re.test(domain));
   };
 
   const sendCode = async () => {
     if (!validEmail(email)) {
-      toast.error("Enter a campus email (.edu, .edu.in, .ac.in, .ac.uk, etc.)");
+      toast.error("Enter a campus email (.edu, .edu.in, .ac.in, .ac.uk, .sch.uk, etc.)");
       return;
     }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("student-verify-request", {
-        body: { email: email.trim().toLowerCase() },
+        body: { email: email.trim().toLowerCase(), kind },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -69,7 +76,7 @@ export function StudentVerifyDialog({ open, onOpenChange, onVerified }: Props) {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success("Student status verified 🎓");
+      toast.success(`${kind === "teacher" ? "Teacher" : "Student"} status verified 🎓`);
       onVerified();
       onOpenChange(false);
     } catch (e: any) {
@@ -86,9 +93,11 @@ export function StudentVerifyDialog({ open, onOpenChange, onVerified }: Props) {
           <div className="mx-auto bg-primary/10 text-primary p-3 rounded-2xl w-fit mb-2">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <DialogTitle className="text-center">Verify your student status</DialogTitle>
+          <DialogTitle className="text-center">
+            Verify your {kind === "teacher" ? "teacher" : "student"} status
+          </DialogTitle>
           <DialogDescription className="text-center">
-            Use your campus email (.edu, .edu.in, .ac.in, .ac.uk, etc.) to unlock student pricing.
+            Use your campus email (.edu, .edu.in, .ac.in, .ac.uk, .sch.uk, etc.) to unlock {kind} pricing.
           </DialogDescription>
         </DialogHeader>
 
