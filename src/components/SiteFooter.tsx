@@ -33,6 +33,7 @@ export function SiteFooter() {
             <li><Link to="/dashboard" className="hover:text-foreground">Sign in</Link></li>
             <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
             <li><Link to="/billing" className="hover:text-foreground">Billing</Link></li>
+            <li><Link to="/referrals" className="hover:text-foreground">Referrals</Link></li>
           </ul>
         </div>
       </div>
