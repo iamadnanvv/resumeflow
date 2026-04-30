@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, GraduationCap } from "lucide-react";
+import { Check, Sparkles, GraduationCap, BookOpen } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { StudentVerifyDialog } from "@/components/StudentVerifyDialog";
 
 const STUDENT_PLAN_IDS = new Set(["student_basic", "student_premium", "student_pro"]);
+const TEACHER_PLAN_IDS = new Set(["teacher_basic", "teacher_premium", "teacher_pro"]);
 
 const PLANS = [
   {
@@ -54,6 +55,27 @@ const STUDENT_PLANS = [
   },
 ];
 
+const TEACHER_PLANS = [
+  {
+    id: "teacher_basic", name: "Teacher Basic", price: 299, currency: "₹",
+    tagline: "For new educators",
+    features: ["5 resumes / CVs", "Academic CV templates", "PDF export", "Cover letter (3/mo)", "Email support"],
+    cta: "Get Teacher Basic",
+  },
+  {
+    id: "teacher_premium", name: "Teacher Premium", price: 499, currency: "₹", popular: true,
+    tagline: "Most popular for faculty",
+    features: ["15 resumes / CVs", "All academic templates", "AI rewriting (100/mo)", "Unlimited cover letters", "Advanced ATS scoring"],
+    cta: "Get Teacher Premium",
+  },
+  {
+    id: "teacher_pro", name: "Teacher Pro", price: 699, currency: "₹",
+    tagline: "For department heads & researchers",
+    features: ["Unlimited resumes / CVs", "Unlimited AI rewriting", "Publication & grants sections", "Resume review by AI", "Priority support"],
+    cta: "Get Teacher Pro",
+  },
+];
+
 declare global { interface Window { Razorpay?: any } }
 
 export default function Pricing() {
@@ -63,19 +85,23 @@ export default function Pricing() {
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [pendingStudentPlan, setPendingStudentPlan] = useState<string | null>(null);
   const [isVerifiedStudent, setIsVerifiedStudent] = useState(false);
+  const [isVerifiedTeacher, setIsVerifiedTeacher] = useState(false);
+  const [verifyKind, setVerifyKind] = useState<"student" | "teacher">("student");
 
   useEffect(() => {
     let active = true;
     (async () => {
-      if (!user) { setIsVerifiedStudent(false); return; }
+      if (!user) { setIsVerifiedStudent(false); setIsVerifiedTeacher(false); return; }
       const { data } = await supabase
         .from("student_verifications")
-        .select("id")
+        .select("id, kind")
         .eq("user_id", user.id)
-        .eq("verified", true)
-        .limit(1)
-        .maybeSingle();
-      if (active) setIsVerifiedStudent(!!data);
+        .eq("verified", true);
+      if (active) {
+        const rows = (data ?? []) as Array<{ kind?: string }>;
+        setIsVerifiedStudent(rows.some(r => (r.kind ?? "student") === "student"));
+        setIsVerifiedTeacher(rows.some(r => r.kind === "teacher"));
+      }
     })();
     return () => { active = false; };
   }, [user]);
@@ -93,9 +119,16 @@ export default function Pricing() {
     if (!user) { navigate("/dashboard"); return; }
     if (planId === "free") { navigate("/dashboard"); return; }
 
-    // Gate: student plans require verification
+    // Gate: student/teacher plans require verification of matching kind
     if (STUDENT_PLAN_IDS.has(planId) && !isVerifiedStudent) {
       setPendingStudentPlan(planId);
+      setVerifyKind("student");
+      setVerifyOpen(true);
+      return;
+    }
+    if (TEACHER_PLAN_IDS.has(planId) && !isVerifiedTeacher) {
+      setPendingStudentPlan(planId);
+      setVerifyKind("teacher");
       setVerifyOpen(true);
       return;
     }
