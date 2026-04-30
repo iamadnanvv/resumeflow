@@ -17,7 +17,17 @@ const ALLOWED_PATTERNS = [
 function isCampusEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase();
   if (!domain) return false;
-  return ALLOWED_PATTERNS.some((re) => re.test(domain));
+  // Accept anything ending in an academic TLD/SLD or having one as a label.
+  // Examples: mit.edu, iitb.ac.in, ox.ac.uk, abc.sch.uk, st-marys.sch.ac.uk,
+  // cs.stanford.edu, math.dept.iitd.ac.in, school.k12.ca.us
+  const ACADEMIC_TLDS = [
+    /(^|\.)edu(\.[a-z]{2,})?$/i,   // .edu, .edu.in, .edu.au
+    /(^|\.)ac(\.[a-z]{2,})?$/i,    // .ac, .ac.in, .ac.uk
+    /(^|\.)sch(\.[a-z]{2,})?$/i,   // .sch.uk, .sch.ac.uk school subdomains
+    /(^|\.)k12\.[a-z]{2}\.us$/i,   // US K-12 districts
+    /(^|\.)edu\.[a-z]{2}$/i,       // explicit edu.<cc>
+  ];
+  return ACADEMIC_TLDS.some((re) => re.test(domain));
 }
 
 async function sha256Hex(input: string): Promise<string> {
@@ -48,9 +58,10 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const kind = (String(body.kind || "student").toLowerCase() === "teacher") ? "teacher" : "student";
     if (!isCampusEmail(email)) {
       return new Response(JSON.stringify({
-        error: "Email must be a campus address (.edu, .edu.in, .ac.in, .ac.uk, etc.)",
+        error: "Email must be a campus address (.edu, .edu.in, .ac.in, .ac.uk, .sch.uk, etc.)",
       }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -85,6 +96,7 @@ Deno.serve(async (req) => {
       expires_at: expiresAt,
       attempts: 0,
       verified: false,
+      kind,
     }, { onConflict: "user_id,email" });
     if (upErr) throw upErr;
 
@@ -98,10 +110,10 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: "resumelylite <onboarding@resend.dev>",
         to: [email],
-        subject: `${code} — Verify your student email · resumelylite`,
+        subject: `${code} — Verify your ${kind} email · resumelylite`,
         html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:24px;color:#0f172a">
-          <h2 style="margin:0 0 16px">Verify your student email</h2>
-          <p>Use this code in resumelylite to unlock student pricing:</p>
+          <h2 style="margin:0 0 16px">Verify your ${kind} email</h2>
+          <p>Use this code in resumelylite to unlock ${kind} pricing:</p>
           <div style="font-size:32px;font-weight:700;letter-spacing:6px;background:#ecfdf5;color:#047857;padding:16px;text-align:center;border-radius:12px;margin:16px 0">${code}</div>
           <p style="color:#64748b;font-size:13px">This code expires in 10 minutes. If you didn't request this, ignore this email.</p>
         </div>`,

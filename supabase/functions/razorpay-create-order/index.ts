@@ -11,9 +11,13 @@ const PLAN_PRICES: Record<string, number> = {
   student_basic: 19900,
   student_premium: 29900,
   student_pro: 39900,
+  teacher_basic: 29900,
+  teacher_premium: 49900,
+  teacher_pro: 69900,
 }; // paise
 
 const STUDENT_PLANS = new Set(["student_basic", "student_premium", "student_pro"]);
+const TEACHER_PLANS = new Set(["teacher_basic", "teacher_premium", "teacher_pro"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -36,25 +40,40 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supa.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    // Server-side gate: student plans require a verified student record
-    if (STUDENT_PLANS.has(plan)) {
+    // Server-side gate: student/teacher plans require a verified record of matching kind
+    const requiredKind = STUDENT_PLANS.has(plan) ? "student" : TEACHER_PLANS.has(plan) ? "teacher" : null;
+    if (requiredKind) {
       const admin0 = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
       const { data: verified } = await admin0
         .from("student_verifications")
         .select("id")
         .eq("user_id", user.id)
         .eq("verified", true)
+        .eq("kind", requiredKind)
         .limit(1)
         .maybeSingle();
       if (!verified) {
         return new Response(JSON.stringify({
-          error: "Student verification required. Verify your campus email to access student pricing.",
-          code: "student_verification_required",
+          error: `${requiredKind === "teacher" ? "Teacher" : "Student"} verification required. Verify your campus email to access ${requiredKind} pricing.`,
+          code: `${requiredKind}_verification_required`,
         }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
     }
 
-    const amount = PLAN_PRICES[plan];
+    // Apply 10% referee discount on FIRST paid order if a pending referral exists
+    const adminPre = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let amount = PLAN_PRICES[plan];
+    let discountApplied = 0;
+    const { data: priorPaid } = await adminPre
+      .from("payments").select("id").eq("user_id", user.id).eq("status", "paid").limit(1).maybeSingle();
+    if (!priorPaid) {
+      const { data: ref } = await adminPre
+        .from("referrals").select("id,status").eq("referee_id", user.id).eq("status", "pending").maybeSingle();
+      if (ref) {
+        discountApplied = Math.round(amount * 0.10);
+        amount = amount - discountApplied;
+      }
+    }
     const orderResp = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: {
@@ -70,6 +89,7 @@ Deno.serve(async (req) => {
           plan,
           brand: "resumelylite",
           product: `resumelylite ${plan.toUpperCase()} plan`,
+          referral_discount_paise: String(discountApplied),
         },
       }),
     });
@@ -83,7 +103,7 @@ Deno.serve(async (req) => {
     });
 
     return new Response(JSON.stringify({
-      order_id: order.id, amount, currency: "INR", key_id: KEY_ID,
+      order_id: order.id, amount, currency: "INR", key_id: KEY_ID, discount_paise: discountApplied,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error(e);
