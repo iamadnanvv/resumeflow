@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { emptyResume } from "@/lib/resume-types";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, Sparkles, Check } from "lucide-react";
+import { Loader2, ArrowRight, Sparkles, Check, GraduationCap, Briefcase, BookOpen } from "lucide-react";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -19,16 +19,23 @@ const GOALS = [
   { id: "first-job", label: "First job / internship" },
 ];
 
+const USER_TYPES = [
+  { id: "student", label: "Student", icon: GraduationCap, hint: "Unlock student pricing with a campus email." },
+  { id: "professional", label: "Working professional", icon: Briefcase, hint: "Tools for career growth & switching." },
+  { id: "teacher", label: "Teacher / Educator", icon: BookOpen, hint: "Academic CV templates & teacher pricing." },
+] as const;
+
 export function Onboarding({ open, onOpenChange }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
+  const [userType, setUserType] = useState<"student" | "professional" | "teacher" | "">("");
   const [goal, setGoal] = useState<string>("new-job");
   const [creating, setCreating] = useState(false);
 
-  const reset = () => { setStep(1); setFullName(""); setRole(""); setGoal("new-job"); };
+  const reset = () => { setStep(1); setFullName(""); setRole(""); setUserType(""); setGoal("new-job"); };
 
   const handleClose = (v: boolean) => {
     if (!v) reset();
@@ -37,7 +44,8 @@ export function Onboarding({ open, onOpenChange }: Props) {
 
   const next = () => {
     if (step === 1 && !fullName.trim()) return toast.error("Enter your name");
-    if (step === 2 && !role.trim()) return toast.error("Enter your role");
+    if (step === 2 && !userType) return toast.error("Pick one to continue");
+    if (step === 3 && !role.trim()) return toast.error("Enter your role");
     setStep((s) => s + 1);
   };
 
@@ -45,6 +53,10 @@ export function Onboarding({ open, onOpenChange }: Props) {
     if (!user) { toast.error("Loading session, try again"); return; }
     setCreating(true);
     try {
+      // Save user_type on profile (best-effort; non-blocking on failure)
+      if (userType) {
+        await supabase.from("profiles").update({ user_type: userType as any }).eq("id", user.id);
+      }
       const seed = {
         ...emptyResume,
         personal: { ...emptyResume.personal, fullName: fullName.trim(), title: role.trim() },
@@ -75,17 +87,19 @@ export function Onboarding({ open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-3 w-fit">
-            <Sparkles className="h-3 w-3" /> Step {step} of 3 · ~60 seconds
+            <Sparkles className="h-3 w-3" /> Step {step} of 4 · ~60 seconds
           </div>
           <DialogTitle className="font-display text-2xl">
             {step === 1 && "What's your name?"}
-            {step === 2 && "What role are you targeting?"}
-            {step === 3 && "What's your goal?"}
+            {step === 2 && "Which best describes you?"}
+            {step === 3 && "What role are you targeting?"}
+            {step === 4 && "What's your goal?"}
           </DialogTitle>
           <DialogDescription>
             {step === 1 && "We'll prefill it on your resume — you can change anything later."}
-            {step === 2 && "E.g. Senior Product Designer, Frontend Engineer."}
-            {step === 3 && "We'll tailor AI suggestions to match."}
+            {step === 2 && "We'll tailor pricing and templates for you."}
+            {step === 3 && "E.g. Senior Product Designer, Frontend Engineer."}
+            {step === 4 && "We'll tailor AI suggestions to match."}
           </DialogDescription>
         </DialogHeader>
 
@@ -105,6 +119,31 @@ export function Onboarding({ open, onOpenChange }: Props) {
           )}
           {step === 2 && (
             <div className="space-y-2">
+              {USER_TYPES.map((t) => {
+                const Icon = t.icon;
+                const active = userType === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setUserType(t.id)}
+                    className={`w-full flex items-start gap-3 text-left rounded-lg border px-3 py-3 text-sm transition ${
+                      active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <Icon className={`h-5 w-5 mt-0.5 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                    <div className="flex-1">
+                      <div className="font-medium">{t.label}</div>
+                      <div className="text-xs text-muted-foreground">{t.hint}</div>
+                    </div>
+                    {active && <Check className="h-4 w-4 text-primary mt-0.5" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {step === 3 && (
+            <div className="space-y-2">
               <Label htmlFor="ob-role">Target role</Label>
               <Input
                 id="ob-role"
@@ -116,7 +155,7 @@ export function Onboarding({ open, onOpenChange }: Props) {
               />
             </div>
           )}
-          {step === 3 && (
+          {step === 4 && (
             <div className="grid grid-cols-2 gap-2">
               {GOALS.map((g) => (
                 <button
@@ -144,7 +183,7 @@ export function Onboarding({ open, onOpenChange }: Props) {
           >
             {step === 1 ? "Cancel" : "Back"}
           </Button>
-          {step < 3 ? (
+          {step < 4 ? (
             <Button
               onClick={next}
               className="bg-gradient-primary text-primary-foreground hover:opacity-90"
