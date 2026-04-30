@@ -97,7 +97,9 @@ export type Database = {
           id: string
           phone: string | null
           plan: Database["public"]["Enums"]["app_plan"]
+          referral_code: string | null
           updated_at: string
+          user_type: Database["public"]["Enums"]["user_type"] | null
           username: string | null
         }
         Insert: {
@@ -107,7 +109,9 @@ export type Database = {
           id: string
           phone?: string | null
           plan?: Database["public"]["Enums"]["app_plan"]
+          referral_code?: string | null
           updated_at?: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
           username?: string | null
         }
         Update: {
@@ -117,8 +121,46 @@ export type Database = {
           id?: string
           phone?: string | null
           plan?: Database["public"]["Enums"]["app_plan"]
+          referral_code?: string | null
           updated_at?: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          referee_id: string
+          referrer_id: string
+          reward_amount: number
+          rewarded_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          referee_id: string
+          referrer_id: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          referee_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -166,6 +208,7 @@ export type Database = {
           email: string
           expires_at: string | null
           id: string
+          kind: Database["public"]["Enums"]["verification_kind"]
           updated_at: string
           user_id: string
           verified: boolean
@@ -178,6 +221,7 @@ export type Database = {
           email: string
           expires_at?: string | null
           id?: string
+          kind?: Database["public"]["Enums"]["verification_kind"]
           updated_at?: string
           user_id: string
           verified?: boolean
@@ -190,6 +234,7 @@ export type Database = {
           email?: string
           expires_at?: string | null
           id?: string
+          kind?: Database["public"]["Enums"]["verification_kind"]
           updated_at?: string
           user_id?: string
           verified?: boolean
@@ -269,6 +314,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          balance: number
+          lifetime_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          lifetime_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          lifetime_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -295,10 +361,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      gen_referral_code: { Args: never; Returns: string }
       get_phone_by_username: { Args: { _username: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_verified_for: {
+        Args: {
+          _kind: Database["public"]["Enums"]["verification_kind"]
           _user_id: string
         }
         Returns: boolean
@@ -313,9 +387,14 @@ export type Database = {
         | "student_basic"
         | "student_premium"
         | "student_pro"
+        | "teacher_basic"
+        | "teacher_premium"
+        | "teacher_pro"
       app_role: "admin" | "user"
       payment_status: "created" | "paid" | "failed" | "refunded"
       subscription_status: "active" | "cancelled" | "expired" | "pending"
+      user_type: "student" | "professional" | "teacher"
+      verification_kind: "student" | "teacher"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -450,10 +529,15 @@ export const Constants = {
         "student_basic",
         "student_premium",
         "student_pro",
+        "teacher_basic",
+        "teacher_premium",
+        "teacher_pro",
       ],
       app_role: ["admin", "user"],
       payment_status: ["created", "paid", "failed", "refunded"],
       subscription_status: ["active", "cancelled", "expired", "pending"],
+      user_type: ["student", "professional", "teacher"],
+      verification_kind: ["student", "teacher"],
     },
   },
 } as const
