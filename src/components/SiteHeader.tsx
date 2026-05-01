@@ -32,6 +32,7 @@ export function SiteHeader() {
             <Link to="/#features" className="hover:text-foreground transition-colors">Features</Link>
             <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
             <Link to="/#templates" className="hover:text-foreground transition-colors">Templates</Link>
+            <Link to="/showcase" className="hover:text-foreground transition-colors">Showcase</Link>
           </nav>
         </div>
         <div className="flex items-center gap-2">
