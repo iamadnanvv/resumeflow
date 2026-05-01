@@ -128,6 +128,45 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_discount_redemptions: {
+        Row: {
+          created_at: string
+          discount_paise: number
+          id: string
+          order_id: string | null
+          payment_id: string | null
+          plan: Database["public"]["Enums"]["app_plan"]
+          referee_id: string
+          referral_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          discount_paise?: number
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          plan: Database["public"]["Enums"]["app_plan"]
+          referee_id: string
+          referral_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          discount_paise?: number
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          plan?: Database["public"]["Enums"]["app_plan"]
+          referee_id?: string
+          referral_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           code: string
@@ -368,6 +407,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_self_referral: {
+        Args: { _referee: string; _referrer: string }
         Returns: boolean
       }
       is_verified_for: {
