@@ -15,6 +15,10 @@ import AtsResume from "./pages/seo/AtsResume";
 import ResumeBuilder from "./pages/seo/ResumeBuilder";
 import CoverLetterGenerator from "./pages/seo/CoverLetterGenerator";
 import Referrals from "./pages/Referrals";
+import Showcase from "./pages/Showcase";
+import ShowcaseDetail from "./pages/ShowcaseDetail";
+import AdminAudit from "./pages/AdminAudit";
+import AdminShowcase from "./pages/AdminShowcase";
 import { AuthProvider } from "./hooks/useAuth";
 import { ReferralCapture } from "./components/ReferralCapture";
 
@@ -40,6 +44,10 @@ const App = () => (
             <Route path="/billing" element={<Billing />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/referrals" element={<Referrals />} />
+            <Route path="/showcase" element={<Showcase />} />
+            <Route path="/showcase/:id" element={<ShowcaseDetail />} />
+            <Route path="/admin/audit" element={<AdminAudit />} />
+            <Route path="/admin/showcase" element={<AdminShowcase />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

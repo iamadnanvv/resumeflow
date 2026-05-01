@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Logo } from "@/components/Logo";
-import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2, Lock } from "lucide-react";
+import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2, Lock, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
+import { ShowcaseSubmitDialog } from "@/components/ShowcaseSubmitDialog";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -31,6 +32,8 @@ export default function Builder() {
   const [title, setTitle] = useState("");
   const [template, setTemplate] = useState("minimal");
   const [content, setContent] = useState<ResumeContent>(emptyResume);
+  const [showcaseStatus, setShowcaseStatus] = useState<"none" | "submitted" | "approved" | "rejected">("none");
+  const [submitOpen, setSubmitOpen] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export default function Builder() {
       setTitle(data.title);
       setTemplate(data.template_slug);
       setContent({ ...emptyResume, ...(data.content as any) });
+      setShowcaseStatus(((data as any).showcase_status as any) || "none");
       setLoading(false);
     })();
   }, [id, navigate]);
@@ -103,6 +107,8 @@ export default function Builder() {
     try {
       const { data, error } = await supabase.functions.invoke("ai-assist", { body: { mode, payload } });
       if (error) throw error;
+      // Best-effort: log AI assist usage for this resume (admin audit)
+      if (id) supabase.rpc("increment_ai_assist", { _resume_id: id } as any).then(() => {}, () => {});
       return data?.text as string;
     } catch (e: any) {
       toast.error(e.message?.includes("402") ? "AI credits exhausted" : "AI request failed");
@@ -174,9 +180,31 @@ export default function Builder() {
                 <span className="ml-1.5 hidden sm:inline">Download (Pro)</span>
               </Button>
             )}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setSubmitOpen(true)}
+              disabled={showcaseStatus === "submitted" || showcaseStatus === "approved"}
+              title={showcaseStatus === "approved" ? "Already published to showcase" : showcaseStatus === "submitted" ? "Pending admin review" : "Submit anonymized to public showcase"}
+            >
+              <Share2 className="h-4 w-4" />
+              <span className="ml-1.5 hidden sm:inline">
+                {showcaseStatus === "approved" ? "In showcase" : showcaseStatus === "submitted" ? "In review" : "Showcase"}
+              </span>
+            </Button>
           </div>
         </div>
       </header>
+
+      {id && (
+        <ShowcaseSubmitDialog
+          open={submitOpen}
+          onOpenChange={(v) => { setSubmitOpen(v); if (!v) (async () => { const { data } = await supabase.from("resumes").select("showcase_status").eq("id", id).maybeSingle(); if (data) setShowcaseStatus((data as any).showcase_status || "none"); })(); }}
+          resumeId={id}
+          content={content}
+          defaultTitle={content.personal.title}
+        />
+      )}
 
       <div className="flex-1 grid lg:grid-cols-[420px_1fr] xl:grid-cols-[480px_1fr]">
         {/* Left: Editor */}

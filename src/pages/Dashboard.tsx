@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { emptyResume } from "@/lib/resume-types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { logResumeCreation } from "@/lib/resume-tracking";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -43,6 +44,7 @@ export default function Dashboard() {
       .select()
       .single();
     if (error) return toast.error(error.message);
+    await logResumeCreation({ resumeId: data.id, userId: user.id, source: "scratch", templateSlug: "minimal" });
     navigate(`/builder/${data.id}`);
   };
 

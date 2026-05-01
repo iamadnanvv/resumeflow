@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { emptyResume } from "@/lib/resume-types";
 import { toast } from "sonner";
+import { logResumeCreation } from "@/lib/resume-tracking";
 import { Loader2, ArrowRight, Sparkles, Check, GraduationCap, Briefcase, BookOpen } from "lucide-react";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
@@ -72,6 +73,13 @@ export function Onboarding({ open, onOpenChange }: Props) {
         .select()
         .single();
       if (error) throw error;
+      await logResumeCreation({
+        resumeId: data.id,
+        userId: user.id,
+        source: "onboarding",
+        templateSlug: "modern",
+        metadata: { goal, user_type: userType, role: role.trim() },
+      });
       toast.success("Resume created — let's build it!");
       onOpenChange(false);
       navigate(`/builder/${data.id}`);
