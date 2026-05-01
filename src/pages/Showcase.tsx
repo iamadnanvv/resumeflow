@@ -89,7 +89,7 @@ export default function Showcase() {
       <Seo
         title="Resume Showcase — get inspired by real, anonymized resumes"
         description="Browse anonymized resumes curated by our team. Use any as a structural template for your own."
-        canonicalPath="/showcase"
+        path="/showcase"
       />
       <SiteHeader />
       <main className="container py-12 flex-1">
