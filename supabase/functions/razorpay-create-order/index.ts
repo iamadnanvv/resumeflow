@@ -64,14 +64,37 @@ Deno.serve(async (req) => {
     const adminPre = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     let amount = PLAN_PRICES[plan];
     let discountApplied = 0;
-    const { data: priorPaid } = await adminPre
-      .from("payments").select("id").eq("user_id", user.id).eq("status", "paid").limit(1).maybeSingle();
-    if (!priorPaid) {
-      const { data: ref } = await adminPre
-        .from("referrals").select("id,status").eq("referee_id", user.id).eq("status", "pending").maybeSingle();
-      if (ref) {
+    let referralIdForDiscount: string | null = null;
+    const { data: ref } = await adminPre
+      .from("referrals")
+      .select("id, referrer_id, status")
+      .eq("referee_id", user.id)
+      .in("status", ["pending", "rewarded"])
+      .maybeSingle();
+    if (ref) {
+      // Hard self-referral guard (cross-account)
+      const { data: isSelf } = await adminPre.rpc("is_self_referral", {
+        _referrer: ref.referrer_id, _referee: user.id,
+      });
+      if (isSelf === true) {
+        return new Response(JSON.stringify({
+          error: "Referral blocked: accounts appear to belong to the same person",
+          code: "self_referral_blocked",
+        }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      // One discount per referee per plan tier — check ledger
+      const { data: prior } = await adminPre
+        .from("referral_discount_redemptions")
+        .select("id,status")
+        .eq("referee_id", user.id)
+        .eq("plan", plan)
+        .in("status", ["reserved", "consumed"])
+        .limit(1)
+        .maybeSingle();
+      if (!prior) {
         discountApplied = Math.round(amount * 0.10);
         amount = amount - discountApplied;
+        referralIdForDiscount = ref.id;
       }
     }
     const orderResp = await fetch("https://api.razorpay.com/v1/orders", {
@@ -101,6 +124,23 @@ Deno.serve(async (req) => {
     await admin.from("payments").insert({
       user_id: user.id, razorpay_order_id: order.id, amount, currency: "INR", plan, status: "created",
     });
+
+    // Reserve the referral discount slot (unique index enforces one per referee+plan)
+    if (referralIdForDiscount && discountApplied > 0) {
+      const { error: redErr } = await admin.from("referral_discount_redemptions").insert({
+        referee_id: user.id,
+        referral_id: referralIdForDiscount,
+        plan,
+        order_id: order.id,
+        discount_paise: discountApplied,
+        status: "reserved",
+      });
+      if (redErr) {
+        // Race: another order already reserved this plan. Roll back the discount on this order.
+        console.warn("Redemption reserve failed, removing discount:", redErr.message);
+        discountApplied = 0;
+      }
+    }
 
     return new Response(JSON.stringify({
       order_id: order.id, amount, currency: "INR", key_id: KEY_ID, discount_paise: discountApplied,
