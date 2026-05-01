@@ -72,6 +72,16 @@ export function SiteHeader() {
                       <Shield className="h-4 w-4 mr-2" /> Admin
                     </DropdownMenuItem>
                   )}
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin/audit")}>
+                      <Shield className="h-4 w-4 mr-2" /> Creation audit
+                    </DropdownMenuItem>
+                  )}
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin/showcase")}>
+                      <Shield className="h-4 w-4 mr-2" /> Showcase curation
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
           )}
