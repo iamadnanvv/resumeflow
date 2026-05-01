@@ -44,6 +44,17 @@ Deno.serve(async (req) => {
       current_period_end: periodEnd.toISOString(),
     });
 
+    // Mark any reserved redemption for this order as consumed
+    try {
+      await admin.from("referral_discount_redemptions")
+        .update({ status: "consumed", payment_id: payment.id })
+        .eq("order_id", razorpay_order_id)
+        .eq("referee_id", user.id)
+        .eq("status", "reserved");
+    } catch (e) {
+      console.error("Failed to consume redemption:", e);
+    }
+
     // Referral payout: if this user was referred and referral is pending, credit referrer ₹100
     try {
       const { data: ref } = await admin
@@ -53,6 +64,14 @@ Deno.serve(async (req) => {
         .eq("status", "pending")
         .maybeSingle();
       if (ref) {
+        // Final cross-account self-referral guard before paying out
+        const { data: isSelf } = await admin.rpc("is_self_referral", {
+          _referrer: ref.referrer_id, _referee: user.id,
+        });
+        if (isSelf === true) {
+          await admin.from("referrals").update({ status: "blocked" }).eq("id", ref.id);
+          throw new Error("self_referral_blocked");
+        }
         const REWARD = 100; // INR
         await admin.from("referrals").update({
           status: "rewarded",
