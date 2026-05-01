@@ -203,13 +203,61 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_creation_events: {
+        Row: {
+          ai_assist_count: number
+          cloned_from_resume_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          resume_id: string
+          source: Database["public"]["Enums"]["resume_creation_source"]
+          template_slug: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_assist_count?: number
+          cloned_from_resume_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          resume_id: string
+          source?: Database["public"]["Enums"]["resume_creation_source"]
+          template_slug?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_assist_count?: number
+          cloned_from_resume_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          resume_id?: string
+          source?: Database["public"]["Enums"]["resume_creation_source"]
+          template_slug?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       resumes: {
         Row: {
           ats_score: number | null
+          cloned_from_resume_id: string | null
           content: Json
           created_at: string
           id: string
           is_public: boolean
+          showcase_admin_notes: string | null
+          showcase_anonymized_content: Json | null
+          showcase_industry: string | null
+          showcase_reviewed_at: string | null
+          showcase_reviewed_by: string | null
+          showcase_status: Database["public"]["Enums"]["showcase_status"]
+          showcase_submitted_at: string | null
+          showcase_title: string | null
           template_slug: string
           title: string
           updated_at: string
@@ -217,10 +265,19 @@ export type Database = {
         }
         Insert: {
           ats_score?: number | null
+          cloned_from_resume_id?: string | null
           content?: Json
           created_at?: string
           id?: string
           is_public?: boolean
+          showcase_admin_notes?: string | null
+          showcase_anonymized_content?: Json | null
+          showcase_industry?: string | null
+          showcase_reviewed_at?: string | null
+          showcase_reviewed_by?: string | null
+          showcase_status?: Database["public"]["Enums"]["showcase_status"]
+          showcase_submitted_at?: string | null
+          showcase_title?: string | null
           template_slug?: string
           title?: string
           updated_at?: string
@@ -228,10 +285,19 @@ export type Database = {
         }
         Update: {
           ats_score?: number | null
+          cloned_from_resume_id?: string | null
           content?: Json
           created_at?: string
           id?: string
           is_public?: boolean
+          showcase_admin_notes?: string | null
+          showcase_anonymized_content?: Json | null
+          showcase_industry?: string | null
+          showcase_reviewed_at?: string | null
+          showcase_reviewed_by?: string | null
+          showcase_status?: Database["public"]["Enums"]["showcase_status"]
+          showcase_submitted_at?: string | null
+          showcase_title?: string | null
           template_slug?: string
           title?: string
           updated_at?: string
@@ -409,6 +475,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_ai_assist: { Args: { _resume_id: string }; Returns: undefined }
       is_self_referral: {
         Args: { _referee: string; _referrer: string }
         Returns: boolean
@@ -435,6 +502,13 @@ export type Database = {
         | "teacher_pro"
       app_role: "admin" | "user"
       payment_status: "created" | "paid" | "failed" | "refunded"
+      resume_creation_source:
+        | "scratch"
+        | "template"
+        | "onboarding"
+        | "cloned_showcase"
+        | "imported"
+      showcase_status: "none" | "submitted" | "approved" | "rejected"
       subscription_status: "active" | "cancelled" | "expired" | "pending"
       user_type: "student" | "professional" | "teacher"
       verification_kind: "student" | "teacher"
@@ -578,6 +652,14 @@ export const Constants = {
       ],
       app_role: ["admin", "user"],
       payment_status: ["created", "paid", "failed", "refunded"],
+      resume_creation_source: [
+        "scratch",
+        "template",
+        "onboarding",
+        "cloned_showcase",
+        "imported",
+      ],
+      showcase_status: ["none", "submitted", "approved", "rejected"],
       subscription_status: ["active", "cancelled", "expired", "pending"],
       user_type: ["student", "professional", "teacher"],
       verification_kind: ["student", "teacher"],
