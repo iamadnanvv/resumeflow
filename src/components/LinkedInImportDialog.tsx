@@ -15,13 +15,11 @@ type Props = {
 };
 
 async function readPdfText(file: File): Promise<string> {
-  // @ts-ignore - dynamic import; pdfjs-dist ships with the project via jspdf already? fallback: text only.
   const buf = await file.arrayBuffer();
-  // Quick lightweight extraction via pdfjs (worker disabled)
-  const pdfjs: any = await import("pdfjs-dist/build/pdf.mjs").catch(() => null);
-  if (!pdfjs) throw new Error("PDF parser not available — please paste text instead.");
-  pdfjs.GlobalWorkerOptions.workerSrc = "";
-  const doc = await pdfjs.getDocument({ data: buf, disableWorker: true }).promise;
+  const pdfjs: any = await import("pdfjs-dist");
+  // Disable worker — runs on main thread, fine for small profile PDFs
+  if (pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc = "";
+  const doc = await pdfjs.getDocument({ data: buf, disableWorker: true, isEvalSupported: false }).promise;
   let out = "";
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
