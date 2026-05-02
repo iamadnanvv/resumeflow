@@ -18,6 +18,9 @@ import html2canvas from "html2canvas";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ShowcaseSubmitDialog } from "@/components/ShowcaseSubmitDialog";
+import { RecruiterInsights } from "@/components/RecruiterInsights";
+import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
+import { Linkedin } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -34,6 +37,7 @@ export default function Builder() {
   const [content, setContent] = useState<ResumeContent>(emptyResume);
   const [showcaseStatus, setShowcaseStatus] = useState<"none" | "submitted" | "approved" | "rejected">("none");
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [linkedInOpen, setLinkedInOpen] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -192,6 +196,10 @@ export default function Builder() {
                 {showcaseStatus === "approved" ? "In showcase" : showcaseStatus === "submitted" ? "In review" : "Showcase"}
               </span>
             </Button>
+            <Button size="sm" variant="outline" onClick={() => setLinkedInOpen(true)} title="Import from LinkedIn export">
+              <Linkedin className="h-4 w-4" />
+              <span className="ml-1.5 hidden sm:inline">LinkedIn</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -205,6 +213,12 @@ export default function Builder() {
           defaultTitle={content.personal.title}
         />
       )}
+
+      <LinkedInImportDialog
+        open={linkedInOpen}
+        onOpenChange={setLinkedInOpen}
+        onImport={(r) => setContent({ ...emptyResume, ...r })}
+      />
 
       <div className="flex-1 grid lg:grid-cols-[420px_1fr] xl:grid-cols-[480px_1fr]">
         {/* Left: Editor */}
@@ -224,6 +238,9 @@ export default function Builder() {
               </ul>
             )}
           </div>
+
+          {/* Recruiter insights — what works */}
+          <RecruiterInsights content={content} />
 
           {/* Personal */}
           <Section title="Personal">

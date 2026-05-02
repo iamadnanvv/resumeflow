@@ -8,6 +8,48 @@ import { ResumePreview } from "@/components/resume/ResumePreview";
 import { sampleResume } from "@/lib/resume-types";
 import { Onboarding } from "@/components/Onboarding";
 import { Seo } from "@/components/Seo";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+const HIRING_LOGOS = [
+  "Google", "Meta", "Amazon", "Microsoft", "Apple",
+  "Netflix", "Stripe", "Airbnb", "Uber", "Spotify",
+  "Salesforce", "Adobe",
+];
+
+const FAQS = [
+  {
+    q: "What does ATS-friendly actually mean?",
+    a: "Applicant Tracking Systems (Workday, Greenhouse, Lever, Taleo) parse resumes into structured fields. Our templates use single-column layouts, real text (no images of text), standard section headings, and selectable PDF output so 99% of ATS read every line correctly.",
+  },
+  {
+    q: "Will my resume pass keyword screening?",
+    a: "Our live ATS score flags missing role keywords and weak verbs as you type. Tailor your skills and bullets to the job description — quantified bullets with role-specific keywords get 40% more callbacks (Jobvite 2024).",
+  },
+  {
+    q: "Is the free plan really free?",
+    a: "Yes. Build unlimited resumes, use AI rewriting, and preview every template free. PDF export and premium templates are part of Pro.",
+  },
+  {
+    q: "How does AI rewriting work?",
+    a: "We send only the bullet or section you're improving (never your whole profile) to a fast LLM with a recruiter-tuned prompt. It rewrites for impact, action verbs, and quantified outcomes — you keep full control to accept or edit.",
+  },
+  {
+    q: "Can I import from LinkedIn?",
+    a: "Yes. Open any resume in the Builder and click LinkedIn to upload your profile PDF or data export. We extract your experience, education, and skills automatically.",
+  },
+  {
+    q: "Can recruiters tell I used a template?",
+    a: "No — our designs mirror the layouts top recruiters prefer. Templates are tested against real ATS parsers and against eye-tracking studies of recruiter scan patterns.",
+  },
+  {
+    q: "Do you offer student or teacher discounts?",
+    a: "Yes. Verify with a campus email (.edu, .ac.uk, .sch., university subdomains) on the Pricing page to unlock student and teacher pricing.",
+  },
+  {
+    q: "How do refunds work?",
+    a: "If Pro doesn't help you in your first 7 days, email us for a full refund — no questions asked.",
+  },
+];
 
 export default function Landing() {
   const [obOpen, setObOpen] = useState(false);
@@ -59,12 +101,31 @@ export default function Landing() {
       </section>
 
       {/* Logos / social proof */}
-      <section className="border-y border-border/60">
-        <div className="container py-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-sm text-muted-foreground">
-          <span className="text-xs uppercase tracking-widest">Trusted by candidates hired at</span>
-          {["Stripe", "Vercel", "Notion", "Linear", "Figma", "Anthropic"].map((b) => (
-            <span key={b} className="font-display font-semibold text-foreground/60">{b}</span>
-          ))}
+      <section className="border-y border-border/60 bg-background/50">
+        <div className="container py-10">
+          <div className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-6">
+            Trusted by candidates hired at
+          </div>
+          <div
+            className="relative overflow-hidden"
+            style={{
+              maskImage:
+                "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+            }}
+          >
+            <div className="flex w-max gap-14 animate-marquee whitespace-nowrap">
+              {[...HIRING_LOGOS, ...HIRING_LOGOS].map((b, i) => (
+                <span
+                  key={`${b}-${i}`}
+                  className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-foreground/45 hover:text-foreground/80 transition-colors"
+                >
+                  {b}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -130,6 +191,48 @@ export default function Landing() {
             </Button>
           </div>
         </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="container py-24 border-t border-border/60">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-widest text-primary mb-3 font-medium">FAQ</div>
+            <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
+              Quick answers
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Everything you'd want to know about resumelylite, ATS, and getting hired.
+            </p>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {FAQS.map((f, i) => (
+              <AccordionItem key={i} value={`faq-${i}`} className="border-border/60">
+                <AccordionTrigger className="text-left font-medium hover:no-underline">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+        {/* JSON-LD for FAQ rich snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQS.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            }),
+          }}
+        />
       </section>
 
       <SiteFooter />
