@@ -27,6 +27,26 @@ export function scoreResume(c: ResumeContent): { score: number; tips: string[] }
   else tips.push("List at least 5 relevant skills.");
   if (c.projects.length > 0) score += 5;
 
+  // Certifications — moderately weighted: ATS parsers reward role-relevant certs (AWS, PMP, Scrum, etc.)
+  // but they're a supporting signal, not a primary one. Cap to avoid cert-stuffing.
+  if (c.certifications.length > 0) {
+    score += Math.min(c.certifications.length * 3, 9);
+    const wellFormed = c.certifications.filter((cert) => cert.name && cert.issuer).length;
+    if (wellFormed === c.certifications.length) score += 2;
+    else tips.push("Add issuer and date for each certification — ATS parses these fields separately.");
+  } else {
+    tips.push("Add 1–3 role-relevant certifications (e.g. AWS, PMP, Scrum) to strengthen ATS match.");
+  }
+
+  // Languages — lower weight: only material for global/customer-facing roles, but proficiency
+  // level is what ATS filters on, so reward structured entries more than raw count.
+  if (c.languages.length > 0) {
+    score += Math.min(c.languages.length * 1.5, 4);
+    const withProficiency = c.languages.filter((l) => l.name && l.proficiency).length;
+    if (withProficiency === c.languages.length) score += 2;
+    else tips.push("Specify proficiency (Elementary→Native) for every language so ATS can filter correctly.");
+  }
+
   const actionVerbs = ["led", "built", "shipped", "designed", "launched", "owned", "drove", "scaled", "improved", "reduced", "increased"];
   const allText = c.experience.flatMap((e) => e.bullets).join(" ").toLowerCase();
   const verbHits = actionVerbs.filter((v) => allText.includes(v)).length;
