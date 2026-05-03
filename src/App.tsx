@@ -14,6 +14,14 @@ import Admin from "./pages/Admin";
 import AtsResume from "./pages/seo/AtsResume";
 import ResumeBuilder from "./pages/seo/ResumeBuilder";
 import CoverLetterGenerator from "./pages/seo/CoverLetterGenerator";
+import SoftwareEngineerResume from "./pages/seo/SoftwareEngineerResume";
+import ProductManagerResume from "./pages/seo/ProductManagerResume";
+import DataScientistResume from "./pages/seo/DataScientistResume";
+import DesignerResume from "./pages/seo/DesignerResume";
+import MarketingResume from "./pages/seo/MarketingResume";
+import SalesResume from "./pages/seo/SalesResume";
+import NurseResume from "./pages/seo/NurseResume";
+import TeacherResume from "./pages/seo/TeacherResume";
 import Referrals from "./pages/Referrals";
 import Showcase from "./pages/Showcase";
 import ShowcaseDetail from "./pages/ShowcaseDetail";
@@ -38,6 +46,14 @@ const App = () => (
             <Route path="/ats-resume" element={<AtsResume />} />
             <Route path="/resume-builder" element={<ResumeBuilder />} />
             <Route path="/cover-letter-generator" element={<CoverLetterGenerator />} />
+            <Route path="/software-engineer-resume" element={<SoftwareEngineerResume />} />
+            <Route path="/product-manager-resume" element={<ProductManagerResume />} />
+            <Route path="/data-scientist-resume" element={<DataScientistResume />} />
+            <Route path="/designer-resume" element={<DesignerResume />} />
+            <Route path="/marketing-resume" element={<MarketingResume />} />
+            <Route path="/sales-resume" element={<SalesResume />} />
+            <Route path="/nurse-resume" element={<NurseResume />} />
+            <Route path="/teacher-resume" element={<TeacherResume />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/builder/:id" element={<Builder />} />
             <Route path="/cover-letter/:id" element={<CoverLetter />} />

@@ -20,4 +20,12 @@ export const PUBLIC_ROUTES: { path: string; changefreq: string; priority: number
   { path: "/ats-resume", changefreq: "monthly", priority: 0.9 },
   { path: "/resume-builder", changefreq: "monthly", priority: 0.9 },
   { path: "/cover-letter-generator", changefreq: "monthly", priority: 0.9 },
+  { path: "/software-engineer-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/product-manager-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/data-scientist-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/designer-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/marketing-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/sales-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/nurse-resume", changefreq: "monthly", priority: 0.8 },
+  { path: "/teacher-resume", changefreq: "monthly", priority: 0.8 },
 ];
