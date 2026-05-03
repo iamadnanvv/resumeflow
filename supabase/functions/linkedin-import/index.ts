@@ -39,9 +39,11 @@ Return ONLY valid JSON matching this exact shape, no prose:
   "experience": [{"role":"","company":"","location":"","startDate":"","endDate":"","bullets":["",""]}],
   "education": [{"degree":"","school":"","startDate":"","endDate":"","description":""}],
   "skills": ["",""],
-  "projects": [{"name":"","link":"","description":""}]
+  "projects": [{"name":"","link":"","description":""}],
+  "certifications": [{"name":"","issuer":"","date":"","link":""}],
+  "languages": [{"name":"","proficiency":""}]
 }
-Rules: Keep dates as written. Bullets concise (max 5 per role). Skills max 20.
+Rules: Keep dates as written. Bullets concise (max 5 per role). Skills max 20. Languages proficiency one of: Elementary, Limited, Professional, Full Professional, Native.
 
 RAW TEXT:
 ${text}`;
@@ -79,6 +81,8 @@ ${text}`;
     parsed.experience = (parsed.experience || []).map((e: any) => ({ id: uid(), bullets: [], ...e }));
     parsed.education = (parsed.education || []).map((e: any) => ({ id: uid(), description: "", ...e }));
     parsed.projects = (parsed.projects || []).map((e: any) => ({ id: uid(), link: "", description: "", ...e }));
+    parsed.certifications = (parsed.certifications || []).map((e: any) => ({ id: uid(), name: "", issuer: "", date: "", link: "", ...e }));
+    parsed.languages = (parsed.languages || []).map((e: any) => ({ id: uid(), name: "", proficiency: "", ...e }));
     parsed.skills = (parsed.skills || []).slice(0, 25);
 
     return json({ resume: parsed });

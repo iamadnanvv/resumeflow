@@ -91,5 +91,17 @@ export function showcaseToTemplate(content: ResumeContent): ResumeContent {
       link: "",
       description: "",
     })),
+    certifications: content.certifications?.map(() => ({
+      id: Math.random().toString(36).slice(2, 9),
+      name: "",
+      issuer: "",
+      date: "",
+      link: "",
+    })) ?? [],
+    languages: content.languages?.map(() => ({
+      id: Math.random().toString(36).slice(2, 9),
+      name: "",
+      proficiency: "",
+    })) ?? [],
   };
 }

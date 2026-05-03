@@ -85,6 +85,32 @@ const MinimalTpl = forwardRef<HTMLDivElement, { content: ResumeContent }>(({ con
           ))}
         </Section>
       )}
+      {content.certifications && content.certifications.length > 0 && (
+        <Section title="Certifications">
+          {content.certifications.map((c) => (
+            <div key={c.id} className="mb-1.5 text-sm flex justify-between items-baseline">
+              <div>
+                <span className="font-semibold">{c.name}</span>
+                {c.issuer && <span className="text-zinc-600"> — {c.issuer}</span>}
+                {c.link && <span className="text-xs text-zinc-500"> · {c.link}</span>}
+              </div>
+              {c.date && <div className="text-xs text-zinc-500">{c.date}</div>}
+            </div>
+          ))}
+        </Section>
+      )}
+      {content.languages && content.languages.length > 0 && (
+        <Section title="Languages">
+          <div className="text-sm">
+            {content.languages.map((l, i) => (
+              <span key={l.id}>
+                {l.name}{l.proficiency && <span className="text-zinc-500"> ({l.proficiency})</span>}
+                {i < content.languages.length - 1 && " · "}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
     </Sheet>
   );
 });
@@ -142,6 +168,28 @@ const ModernTpl = forwardRef<HTMLDivElement, { content: ResumeContent }>(({ cont
               ))}
             </Section>
           )}
+          {content.certifications && content.certifications.length > 0 && (
+            <Section title="Certifications" accent>
+              {content.certifications.map((c) => (
+                <div key={c.id} className="mb-1 text-sm">
+                  <span className="font-semibold">{c.name}</span>
+                  {c.issuer && <span className="text-zinc-600"> — {c.issuer}</span>}
+                  {c.date && <span className="text-xs text-zinc-500"> · {c.date}</span>}
+                </div>
+              ))}
+            </Section>
+          )}
+          {content.languages && content.languages.length > 0 && (
+            <Section title="Languages" accent>
+              <div className="flex flex-wrap gap-1">
+                {content.languages.map((l) => (
+                  <span key={l.id} className="text-xs px-1.5 py-0.5 bg-zinc-100 rounded">
+                    {l.name}{l.proficiency && ` · ${l.proficiency}`}
+                  </span>
+                ))}
+              </div>
+            </Section>
+          )}
         </div>
       </div>
     </Sheet>
@@ -190,6 +238,24 @@ const ExecutiveTpl = forwardRef<HTMLDivElement, { content: ResumeContent }>(({ c
       {content.skills.length > 0 && (
         <Section title="Core Competencies" serif>
           <div className="text-sm">{content.skills.join(" · ")}</div>
+        </Section>
+      )}
+      {content.certifications && content.certifications.length > 0 && (
+        <Section title="Certifications" serif>
+          {content.certifications.map((c) => (
+            <div key={c.id} className="mb-1 text-sm">
+              <span className="font-bold">{c.name}</span>
+              {c.issuer && <span> — {c.issuer}</span>}
+              {c.date && <span className="italic text-zinc-500"> · {c.date}</span>}
+            </div>
+          ))}
+        </Section>
+      )}
+      {content.languages && content.languages.length > 0 && (
+        <Section title="Languages" serif>
+          <div className="text-sm">
+            {content.languages.map((l) => l.proficiency ? `${l.name} (${l.proficiency})` : l.name).join(" · ")}
+          </div>
         </Section>
       )}
     </Sheet>
