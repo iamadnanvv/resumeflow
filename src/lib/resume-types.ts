@@ -32,6 +32,18 @@ export type ResumeContent = {
     link: string;
     description: string;
   }>;
+  certifications: Array<{
+    id: string;
+    name: string;
+    issuer: string;
+    date: string;
+    link: string;
+  }>;
+  languages: Array<{
+    id: string;
+    name: string;
+    proficiency: string;
+  }>;
 };
 
 export const emptyResume: ResumeContent = {
@@ -40,6 +52,8 @@ export const emptyResume: ResumeContent = {
   education: [],
   skills: [],
   projects: [],
+  certifications: [],
+  languages: [],
 };
 
 export const sampleResume: ResumeContent = {
@@ -71,4 +85,6 @@ export const sampleResume: ResumeContent = {
   ],
   skills: ["TypeScript", "React", "Node.js", "PostgreSQL", "AWS"],
   projects: [],
+  certifications: [],
+  languages: [],
 };
