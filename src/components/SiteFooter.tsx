@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export function SiteFooter() {
   return (
     <footer className="border-t mt-24">
-      <div className="container py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+      <div className="container py-12 grid grid-cols-2 md:grid-cols-6 gap-8">
         <div className="col-span-2">
           <Logo />
           <p className="text-sm text-muted-foreground mt-4 max-w-xs">
@@ -26,6 +26,19 @@ export function SiteFooter() {
             <li><Link to="/ats-resume" className="hover:text-foreground">ATS Resume</Link></li>
             <li><Link to="/resume-builder" className="hover:text-foreground">Resume Builder</Link></li>
             <li><Link to="/cover-letter-generator" className="hover:text-foreground">Cover Letter Generator</Link></li>
+          </ul>
+        </div>
+        <div>
+          <div className="font-medium mb-3 text-sm">By role</div>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li><Link to="/software-engineer-resume" className="hover:text-foreground">Software Engineer</Link></li>
+            <li><Link to="/product-manager-resume" className="hover:text-foreground">Product Manager</Link></li>
+            <li><Link to="/data-scientist-resume" className="hover:text-foreground">Data Scientist</Link></li>
+            <li><Link to="/designer-resume" className="hover:text-foreground">UX / Designer</Link></li>
+            <li><Link to="/marketing-resume" className="hover:text-foreground">Marketing</Link></li>
+            <li><Link to="/sales-resume" className="hover:text-foreground">Sales</Link></li>
+            <li><Link to="/nurse-resume" className="hover:text-foreground">Nurse</Link></li>
+            <li><Link to="/teacher-resume" className="hover:text-foreground">Teacher</Link></li>
           </ul>
         </div>
         <div>
