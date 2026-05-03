@@ -379,6 +379,53 @@ export default function Builder() {
               </div>
             ))}
           </Section>
+
+          {/* Certifications */}
+          <Section title="Certifications" action={
+            <Button size="sm" variant="ghost" onClick={() => setContent((c) => ({ ...c, certifications: [...c.certifications, { id: uid(), name: "", issuer: "", date: "", link: "" }] }))}>
+              <Plus className="h-3.5 w-3.5" /> Add
+            </Button>
+          }>
+            {content.certifications.map((cert, i) => (
+              <div key={cert.id} className="rounded-lg border bg-card p-3 space-y-2 mb-2">
+                <div className="flex gap-2">
+                  <Field placeholder="Certification name" v={cert.name} on={(v) => updateArr(setContent, "certifications", i, { name: v })} className="flex-1" />
+                  <Button size="icon" variant="ghost" onClick={() => setContent((c) => ({ ...c, certifications: c.certifications.filter((_, ix) => ix !== i) }))}><Trash2 className="h-3.5 w-3.5" /></Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field placeholder="Issuer" v={cert.issuer} on={(v) => updateArr(setContent, "certifications", i, { issuer: v })} />
+                  <Field placeholder="Date" v={cert.date} on={(v) => updateArr(setContent, "certifications", i, { date: v })} />
+                </div>
+                <Field placeholder="Credential URL (optional)" v={cert.link} on={(v) => updateArr(setContent, "certifications", i, { link: v })} />
+              </div>
+            ))}
+          </Section>
+
+          {/* Languages */}
+          <Section title="Languages" action={
+            <Button size="sm" variant="ghost" onClick={() => setContent((c) => ({ ...c, languages: [...c.languages, { id: uid(), name: "", proficiency: "Professional" }] }))}>
+              <Plus className="h-3.5 w-3.5" /> Add
+            </Button>
+          }>
+            {content.languages.map((lang, i) => (
+              <div key={lang.id} className="rounded-lg border bg-card p-3 space-y-2 mb-2">
+                <div className="flex gap-2">
+                  <Field placeholder="Language" v={lang.name} on={(v) => updateArr(setContent, "languages", i, { name: v })} className="flex-1" />
+                  <Button size="icon" variant="ghost" onClick={() => setContent((c) => ({ ...c, languages: c.languages.filter((_, ix) => ix !== i) }))}><Trash2 className="h-3.5 w-3.5" /></Button>
+                </div>
+                <Select value={lang.proficiency || "Professional"} onValueChange={(v) => updateArr(setContent, "languages", i, { proficiency: v })}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Proficiency" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Elementary">Elementary</SelectItem>
+                    <SelectItem value="Limited">Limited Working</SelectItem>
+                    <SelectItem value="Professional">Professional</SelectItem>
+                    <SelectItem value="Full Professional">Full Professional</SelectItem>
+                    <SelectItem value="Native">Native / Bilingual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </Section>
         </aside>
 
         {/* Right: Preview */}
