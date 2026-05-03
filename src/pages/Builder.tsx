@@ -446,7 +446,7 @@ function updateExp(setContent: any, i: number, patch: any) {
     return { ...c, experience: ex };
   });
 }
-function updateArr(setContent: any, key: "education" | "projects", i: number, patch: any) {
+function updateArr(setContent: any, key: "education" | "projects" | "certifications" | "languages", i: number, patch: any) {
   setContent((c: ResumeContent) => {
     const arr = [...(c as any)[key]];
     arr[i] = { ...arr[i], ...patch };
