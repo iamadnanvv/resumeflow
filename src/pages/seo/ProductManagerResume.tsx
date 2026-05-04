@@ -10,6 +10,7 @@ export default function ProductManagerResume() {
       h1="A product manager resume focused on outcomes."
       highlight="outcomes"
       intro="PM resumes live or die by metrics. resumelylite turns every bullet into an outcome statement: what you shipped, who it served, and the number that proves it worked."
+      primaryCta={{ label: "Build my PM resume", to: "/dashboard?role=product-manager" }}
       benefits={[
         "Outcome-first bullet rewrites (ARR, retention, NPS, activation)",
         "Sections for shipped products, A/B tests, and roadmaps",

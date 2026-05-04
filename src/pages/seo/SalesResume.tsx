@@ -10,6 +10,7 @@ export default function SalesResume() {
       h1="A sales resume that leads with quota and attainment."
       highlight="quota and attainment"
       intro="Sales hiring managers scan for one thing first: did you hit your number? resumelylite puts quota, attainment, and ACV at the top of every role — exactly where they belong."
+      primaryCta={{ label: "Build my sales resume", to: "/dashboard?role=sales" }}
       benefits={[
         "Quota-first formatting (% to plan, ACV, deal size, ramp)",
         "Bullets for pipeline generation, closed-won, expansion, retention",

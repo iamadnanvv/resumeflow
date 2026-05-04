@@ -10,6 +10,7 @@ export default function SoftwareEngineerResume() {
       h1="A software engineer resume that gets you to the on-site."
       highlight="on-site"
       intro="Recruiters skim your resume in 6 seconds. resumelylite helps you front-load impact — shipped systems, scale numbers, and the languages and frameworks tech hiring managers actually filter for."
+      primaryCta={{ label: "Build my SWE resume", to: "/dashboard?role=software-engineer" }}
       benefits={[
         "Tech-tuned bullet rewrites with measurable impact (latency, scale, %)",
         "Smart sections for GitHub, LeetCode, and portfolio links",

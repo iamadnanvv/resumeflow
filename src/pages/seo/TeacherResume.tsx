@@ -10,6 +10,7 @@ export default function TeacherResume() {
       h1="A teacher resume that puts impact above duties."
       highlight="impact above duties"
       intro="Hiring committees see the same generic teacher resumes every season. resumelylite helps you stand out by quantifying student outcomes, curriculum design, and classroom leadership."
+      primaryCta={{ label: "Build my teacher resume", to: "/dashboard?role=teacher" }}
       benefits={[
         "Sections for credentials, endorsements, and PD/CEUs",
         "Bullets quantifying test gains, retention, and engagement",

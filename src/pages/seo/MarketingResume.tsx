@@ -10,6 +10,7 @@ export default function MarketingResume() {
       h1="A marketing resume that quantifies growth."
       highlight="growth"
       intro="Marketing leaders are hired on numbers: pipeline, payback, traffic, conversion. resumelylite makes sure every bullet on your resume earns its place with a metric."
+      primaryCta={{ label: "Build my marketing resume", to: "/dashboard?role=marketing" }}
       benefits={[
         "Bullets tuned for pipeline, CAC, ROAS, MQLs, and SEO traffic",
         "Channel-aware AI: paid, content, lifecycle, ABM, partnerships",
