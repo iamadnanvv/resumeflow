@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { ResumeContent, emptyResume } from "@/lib/resume-types";
@@ -20,7 +20,8 @@ import { Link } from "react-router-dom";
 import { ShowcaseSubmitDialog } from "@/components/ShowcaseSubmitDialog";
 import { RecruiterInsights } from "@/components/RecruiterInsights";
 import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
-import { Linkedin } from "lucide-react";
+import { Linkedin, Target, X } from "lucide-react";
+import { getRolePreset } from "@/lib/role-presets";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -28,6 +29,9 @@ export default function Builder() {
   const { id } = useParams();
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rolePreset = getRolePreset(searchParams.get("role"));
+  const [showRoleBanner, setShowRoleBanner] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
