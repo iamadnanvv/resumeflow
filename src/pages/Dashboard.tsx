@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Plus, FileText, Mail, Trash2, Edit3, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { emptyResume } from "@/lib/resume-types";
+import { emptyResume, type ResumeContent } from "@/lib/resume-types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { logResumeCreation } from "@/lib/resume-tracking";
+import { getRolePreset } from "@/lib/role-presets";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -16,6 +17,8 @@ export default function Dashboard() {
   const [letters, setLetters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const seededRef = useRef(false);
 
   const load = async () => {
     if (!user) return;
@@ -29,6 +32,38 @@ export default function Dashboard() {
   };
 
   useEffect(() => { load(); }, [user]);
+
+  // Auto-create a role-seeded resume when arriving via /dashboard?role=<slug>
+  useEffect(() => {
+    const roleSlug = searchParams.get("role");
+    if (!roleSlug || !user || loading || seededRef.current) return;
+    const preset = getRolePreset(roleSlug);
+    if (!preset) return;
+    seededRef.current = true;
+    (async () => {
+      const limit = profile?.plan === "free" ? 1 : profile?.plan === "pro" ? 10 : 999;
+      if (resumes.length >= limit) {
+        toast.error(`Your ${profile?.plan} plan allows ${limit} resume${limit > 1 ? "s" : ""}. Upgrade for more.`);
+        setSearchParams({}, { replace: true });
+        navigate("/pricing");
+        return;
+      }
+      const seeded: ResumeContent = {
+        ...emptyResume,
+        personal: { ...emptyResume.personal, title: preset.title, summary: preset.summary },
+        skills: preset.skills,
+      };
+      const { data, error } = await supabase
+        .from("resumes")
+        .insert({ user_id: user.id, title: `${preset.label} Resume`, content: seeded as any })
+        .select()
+        .single();
+      if (error) { toast.error(error.message); return; }
+      await logResumeCreation({ resumeId: data.id, userId: user.id, source: "scratch", templateSlug: "minimal" });
+      toast.success(`Started a ${preset.label} resume — keyword tips loaded.`);
+      navigate(`/builder/${data.id}?role=${preset.slug}`, { replace: true });
+    })();
+  }, [searchParams, user, loading, resumes.length, profile?.plan, navigate, setSearchParams]);
 
   const createResume = async () => {
     if (!user) return;

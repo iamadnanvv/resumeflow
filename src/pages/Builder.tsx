@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { ResumeContent, emptyResume } from "@/lib/resume-types";
@@ -20,7 +20,8 @@ import { Link } from "react-router-dom";
 import { ShowcaseSubmitDialog } from "@/components/ShowcaseSubmitDialog";
 import { RecruiterInsights } from "@/components/RecruiterInsights";
 import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
-import { Linkedin } from "lucide-react";
+import { Linkedin, Target, X } from "lucide-react";
+import { getRolePreset } from "@/lib/role-presets";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -28,6 +29,9 @@ export default function Builder() {
   const { id } = useParams();
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rolePreset = getRolePreset(searchParams.get("role"));
+  const [showRoleBanner, setShowRoleBanner] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -223,6 +227,28 @@ export default function Builder() {
       <div className="flex-1 grid lg:grid-cols-[420px_1fr] xl:grid-cols-[480px_1fr]">
         {/* Left: Editor */}
         <aside className="border-r overflow-y-auto max-h-[calc(100vh-3.5rem)] p-6 space-y-6">
+          {/* Role preset banner (deep-linked from SEO landing pages) */}
+          {rolePreset && showRoleBanner && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 relative">
+              <button
+                onClick={() => { setShowRoleBanner(false); const sp = new URLSearchParams(searchParams); sp.delete("role"); setSearchParams(sp, { replace: true }); }}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+                aria-label="Dismiss role tips"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+              <div className="flex items-center gap-2 text-xs font-medium text-primary uppercase tracking-widest">
+                <Target className="h-3.5 w-3.5" /> {rolePreset.label} preset
+              </div>
+              <p className="mt-1.5 text-sm text-foreground">
+                Keyword prompts tuned for {rolePreset.label} roles:
+              </p>
+              <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                {rolePreset.keywordPrompts.map((k) => <li key={k}>• {k}</li>)}
+              </ul>
+            </div>
+          )}
+
           {/* Score */}
           <div className="rounded-xl glass p-4">
             <div className="flex items-center justify-between">

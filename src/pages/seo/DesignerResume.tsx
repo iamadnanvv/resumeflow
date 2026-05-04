@@ -10,6 +10,7 @@ export default function DesignerResume() {
       h1="A designer resume that does justice to your portfolio."
       highlight="portfolio"
       intro="Design hiring teams want to see craft and impact. resumelylite keeps the resume itself ATS-safe while linking out cleanly to your portfolio, case studies, and Figma files."
+      primaryCta={{ label: "Build my designer resume", to: "/dashboard?role=designer" }}
       benefits={[
         "Sections for portfolio, case studies, and Dribbble/Behance",
         "Outcome-led bullets (activation, conversion, task time)",

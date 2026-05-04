@@ -10,6 +10,7 @@ export default function DataScientistResume() {
       h1="A data scientist resume that proves business impact."
       highlight="business impact"
       intro="Models are interesting; outcomes get hired. resumelylite helps you frame every project as a metric the business cares about — revenue, retention, lift, or cost saved."
+      primaryCta={{ label: "Build my DS resume", to: "/dashboard?role=data-scientist" }}
       benefits={[
         "Bullets that pair model + metric + business outcome",
         "Sections for publications, Kaggle, and Jupyter portfolios",

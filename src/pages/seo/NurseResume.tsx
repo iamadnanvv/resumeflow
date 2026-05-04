@@ -10,6 +10,7 @@ export default function NurseResume() {
       h1="A nursing resume hospitals actually shortlist."
       highlight="hospitals actually shortlist"
       intro="Hospital recruiters use ATS systems too. resumelylite formats your nursing resume so credentials, licenses, and patient-load impact are surfaced first — exactly what nurse managers screen for."
+      primaryCta={{ label: "Build my nursing resume", to: "/dashboard?role=nurse" }}
       benefits={[
         "Dedicated sections for licenses, certifications (BLS, ACLS, PALS), and CEUs",
         "Bullets that quantify patient load, acuity, and outcomes",
