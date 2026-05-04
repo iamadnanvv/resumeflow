@@ -10,6 +10,7 @@ import { emptyResume, type ResumeContent } from "@/lib/resume-types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { logResumeCreation } from "@/lib/resume-tracking";
 import { getRolePreset } from "@/lib/role-presets";
+import { AiAssistantDialog } from "@/components/AiAssistantDialog";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -131,6 +132,15 @@ export default function Dashboard() {
           </TabsList>
 
           <TabsContent value="resumes" className="mt-6">
+            <div className="mb-4 rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="font-display text-lg font-semibold flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" /> Describe it. We'll build it.
+                </div>
+                <p className="text-sm text-muted-foreground mt-0.5">Type your background — AI generates a complete, ATS-friendly resume in seconds.</p>
+              </div>
+              <AiAssistantDialog />
+            </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <button onClick={createResume} className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary group">
                 <div className="bg-primary/10 group-hover:bg-primary/20 transition rounded-full p-4">
