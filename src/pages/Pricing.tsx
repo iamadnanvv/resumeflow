@@ -17,19 +17,19 @@ const PLANS = [
   {
     id: "free", name: "Free", price: 0, currency: "₹",
     tagline: "Get started",
-    features: ["1 resume", "Minimal & Modern templates", "PDF export", "Basic ATS score"],
+    features: ["1 resume", "Minimal & Modern templates", "Live ATS score", "AI rewriting (fair-use credits)"],
     cta: "Get started",
   },
   {
     id: "pro", name: "Pro", price: 499, currency: "₹", popular: true,
     tagline: "For active job seekers",
-    features: ["10 resumes", "All templates incl. premium", "AI rewriting unlimited", "Cover letter builder", "Advanced ATS scoring", "Priority support"],
+    features: ["10 resumes", "All templates incl. premium", "PDF download", "AI rewriting (high monthly limit)", "Cover letter builder", "Advanced ATS scoring", "Priority support"],
     cta: "Upgrade to Pro",
   },
   {
     id: "premium", name: "Premium", price: 999, currency: "₹",
     tagline: "Unlimited everything",
-    features: ["Unlimited resumes", "All Pro features", "Unlimited cover letters", "Resume review by AI", "Priority AI processing", "Early access to new templates"],
+    features: ["Unlimited resumes", "All Pro features", "Unlimited cover letters", "Resume review by AI", "Highest AI usage limits", "Early access to new templates"],
     cta: "Go Premium",
   },
 ];
@@ -44,13 +44,13 @@ const STUDENT_PLANS = [
   {
     id: "student_premium", name: "Student Premium", price: 299, currency: "₹", popular: true,
     tagline: "Most popular for students",
-    features: ["10 resumes", "All templates incl. premium", "AI rewriting (50/mo)", "5 cover letters / mo", "Advanced ATS scoring"],
+    features: ["10 resumes", "All templates incl. premium", "PDF download", "AI rewriting (high monthly limit)", "5 cover letters / mo", "Advanced ATS scoring"],
     cta: "Get Student Premium",
   },
   {
     id: "student_pro", name: "Student Pro", price: 399, currency: "₹",
     tagline: "Everything for campus placements",
-    features: ["Unlimited resumes", "Unlimited AI rewriting", "Unlimited cover letters", "Resume review by AI", "Priority support"],
+    features: ["Unlimited resumes", "PDF download", "Unlimited cover letters", "Resume review by AI", "Highest AI usage limits", "Priority support"],
     cta: "Get Student Pro",
   },
 ];
@@ -59,19 +59,19 @@ const TEACHER_PLANS = [
   {
     id: "teacher_basic", name: "Teacher Basic", price: 299, currency: "₹",
     tagline: "For new educators",
-    features: ["5 resumes / CVs", "Academic CV templates", "PDF export", "Cover letter (3/mo)", "Email support"],
+    features: ["5 resumes / CVs", "Academic CV templates", "PDF download", "Cover letter (3/mo)", "Email support"],
     cta: "Get Teacher Basic",
   },
   {
     id: "teacher_premium", name: "Teacher Premium", price: 499, currency: "₹", popular: true,
     tagline: "Most popular for faculty",
-    features: ["15 resumes / CVs", "All academic templates", "AI rewriting (100/mo)", "Unlimited cover letters", "Advanced ATS scoring"],
+    features: ["15 resumes / CVs", "All academic templates", "PDF download", "AI rewriting (high monthly limit)", "Unlimited cover letters", "Advanced ATS scoring"],
     cta: "Get Teacher Premium",
   },
   {
     id: "teacher_pro", name: "Teacher Pro", price: 699, currency: "₹",
     tagline: "For department heads & researchers",
-    features: ["Unlimited resumes / CVs", "Unlimited AI rewriting", "Publication & grants sections", "Resume review by AI", "Priority support"],
+    features: ["Unlimited resumes / CVs", "Highest AI usage limits", "Publication & grants sections", "Resume review by AI", "Priority support"],
     cta: "Get Teacher Pro",
   },
 ];
@@ -179,7 +179,7 @@ export default function Pricing() {
     <div className="min-h-screen flex flex-col">
       <Seo
         title="Pricing — resumelylite AI Resume Builder"
-        description="Simple pricing for resumelylite. Free forever for basic resumes. Pro at ₹499/mo for unlimited PDF downloads, AI rewriting, and premium templates."
+        description="Simple pricing for resumelylite. Free for 1 resume. Pro at ₹499/mo unlocks PDF downloads, AI rewriting, premium templates, and the cover letter builder."
         path="/pricing"
       />
       <SiteHeader />
@@ -189,7 +189,7 @@ export default function Pricing() {
             <Sparkles className="h-3 w-3" /> Simple pricing
           </div>
           <h1 className="font-display text-5xl font-semibold tracking-tight">Pick your plan.</h1>
-          <p className="mt-4 text-muted-foreground">Cancel anytime. All plans include core builder + PDF export.</p>
+          <p className="mt-4 text-muted-foreground">Cancel anytime. PDF download requires Pro or higher.</p>
         </div>
 
         <div className="mt-14 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
