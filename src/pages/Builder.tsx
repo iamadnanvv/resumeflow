@@ -22,7 +22,7 @@ import { RecruiterInsights } from "@/components/RecruiterInsights";
 import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
 import { Linkedin, Target, X } from "lucide-react";
 import { getRolePreset } from "@/lib/role-presets";
-import { RegenerateSectionDialog } from "@/components/RegenerateSectionDialog";
+import { RegenerateSectionDialog, type SectionPatch } from "@/components/RegenerateSectionDialog";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -232,7 +232,7 @@ export default function Builder() {
           onOpenChange={(v) => { if (!v) setRegenSection(null); }}
           section={regenSection}
           currentContent={content}
-          onApply={(patch) => {
+          onApply={(patch: SectionPatch) => {
             setContent((c) => {
               if (patch.summary !== undefined) {
                 return { ...c, personal: { ...c.personal, summary: patch.summary as string } };
