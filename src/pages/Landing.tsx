@@ -10,24 +10,18 @@ import { Onboarding } from "@/components/Onboarding";
 import { Seo } from "@/components/Seo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-const HIRING_LOGOS = [
-  "Google", "Meta", "Amazon", "Microsoft", "Apple",
-  "Netflix", "Stripe", "Airbnb", "Uber", "Spotify",
-  "Salesforce", "Adobe",
-];
-
 const FAQS = [
   {
     q: "What does ATS-friendly actually mean?",
-    a: "Applicant Tracking Systems (Workday, Greenhouse, Lever, Taleo) parse resumes into structured fields. Our templates use single-column layouts, real text (no images of text), standard section headings, and selectable PDF output so 99% of ATS read every line correctly.",
+    a: "Applicant Tracking Systems (Workday, Greenhouse, Lever, Taleo) parse resumes into structured fields. Our templates use single-column layouts, real selectable text (no images of text), and standard section headings so common ATS parsers can read every line.",
   },
   {
     q: "Will my resume pass keyword screening?",
-    a: "Our live ATS score flags missing role keywords and weak verbs as you type. Tailor your skills and bullets to the job description — quantified bullets with role-specific keywords get 40% more callbacks (Jobvite 2024).",
+    a: "Our live ATS score flags missing role keywords and weak verbs as you type. Tailor your skills and bullets to the job description — quantified, role-specific bullets consistently score higher in keyword screening.",
   },
   {
     q: "Is the free plan really free?",
-    a: "Yes. Build unlimited resumes, use AI rewriting, and preview every template free. PDF export and premium templates are part of Pro.",
+    a: "Yes. The Free plan lets you build 1 resume end-to-end, preview every template, and try AI rewriting (subject to fair-use AI credits). PDF download, multiple resumes, and premium templates are part of Pro.",
   },
   {
     q: "How does AI rewriting work?",
@@ -39,15 +33,15 @@ const FAQS = [
   },
   {
     q: "Can recruiters tell I used a template?",
-    a: "No — our designs mirror the layouts top recruiters prefer. Templates are tested against real ATS parsers and against eye-tracking studies of recruiter scan patterns.",
+    a: "Our templates use clean, single-column layouts in line with what most recruiters and ATS expect. They look professionally designed without screaming \"template\" — the focus stays on your content.",
   },
   {
     q: "Do you offer student or teacher discounts?",
-    a: "Yes. Verify with a campus email (.edu, .ac.uk, .sch., university subdomains) on the Pricing page to unlock student and teacher pricing.",
+    a: "Yes. Verify with a campus email (e.g. .edu, .ac.uk, school or university subdomains) on the Pricing page to unlock student and teacher pricing.",
   },
   {
     q: "How do refunds work?",
-    a: "If Pro doesn't help you in your first 7 days, email us for a full refund — no questions asked.",
+    a: "Email support within 7 days of your first paid charge if Pro isn't a fit and we'll review your refund request.",
   },
 ];
 
@@ -69,7 +63,7 @@ export default function Landing() {
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-6">
               <Sparkles className="h-3 w-3" />
-              Powered by AI · ATS-optimized · 4.9/5 by 12k users
+              Powered by AI · ATS-optimized · Free to start
             </div>
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05]">
               The resume that <span className="text-gradient">beats the bots</span>.
@@ -100,32 +94,20 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Logos / social proof */}
+      {/* Value strip — neutral, fact-based */}
       <section className="border-y border-border/60 bg-background/50">
-        <div className="container py-10">
-          <div className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-6">
-            Trusted by candidates hired at
-          </div>
-          <div
-            className="relative overflow-hidden"
-            style={{
-              maskImage:
-                "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-            }}
-          >
-            <div className="flex w-max gap-14 animate-marquee whitespace-nowrap">
-              {[...HIRING_LOGOS, ...HIRING_LOGOS].map((b, i) => (
-                <span
-                  key={`${b}-${i}`}
-                  className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-foreground/45 hover:text-foreground/80 transition-colors"
-                >
-                  {b}
-                </span>
-              ))}
+        <div className="container py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {[
+            { k: "ATS-safe", v: "Single-column, parser-friendly layouts" },
+            { k: "AI-assisted", v: "Rewrite bullets in your voice" },
+            { k: "Live score", v: "See ATS feedback as you type" },
+            { k: "Export", v: "One-click PDF (Pro)" },
+          ].map((item) => (
+            <div key={item.k}>
+              <div className="text-xs uppercase tracking-widest text-primary font-medium">{item.k}</div>
+              <div className="text-sm text-muted-foreground mt-1">{item.v}</div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -171,7 +153,9 @@ export default function Landing() {
                 </div>
               </div>
               <div className="p-4 border-t flex items-center justify-between">
-                <span className="font-medium capitalize">{t}</span>
+                <span className="font-medium capitalize">
+                  {t}{t === "executive" && <span className="ml-1.5 text-[10px] font-normal text-primary">Pro</span>}
+                </span>
                 <Button size="sm" variant="ghost" onClick={() => setObOpen(true)}>Use</Button>
               </div>
             </div>
@@ -185,7 +169,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-gradient-primary opacity-10" />
           <div className="relative">
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Your next role is one resume away.</h2>
-            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Join thousands of candidates who built their resumes with resumelylite and got interviews at top companies.</p>
+            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">Build a polished, ATS-friendly resume with resumelylite — free to start, no credit card required.</p>
             <Button size="lg" onClick={() => setObOpen(true)} className="mt-8 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow h-12 px-8">
               Start free <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
