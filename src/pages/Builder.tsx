@@ -150,7 +150,6 @@ export default function Builder() {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
 
-  const isPremiumTemplate = template === "executive" || template === "creative";
   const canUsePremium = profile?.plan !== "free";
 
   return (
@@ -166,8 +165,8 @@ export default function Builder() {
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground hidden sm:inline">{saving ? "Saving…" : "Saved"}</span>
             <Select value={template} onValueChange={(v) => {
-              if ((v === "executive" || v === "creative") && !canUsePremium) {
-                toast.error("Premium template — upgrade to Pro");
+              if (v === "executive" && !canUsePremium) {
+                toast.error("Executive is a Pro template — upgrade to use it.");
                 return;
               }
               setTemplate(v);
@@ -176,7 +175,7 @@ export default function Builder() {
               <SelectContent>
                 <SelectItem value="minimal">Minimal</SelectItem>
                 <SelectItem value="modern">Modern</SelectItem>
-                <SelectItem value="executive">Executive ★</SelectItem>
+                <SelectItem value="executive">Executive {canUsePremium ? "★" : "(Pro)"}</SelectItem>
               </SelectContent>
             </Select>
             {profile?.plan === "pro" || profile?.plan === "premium" ? (
