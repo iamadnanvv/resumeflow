@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Logo } from "@/components/Logo";
-import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2, Lock, Share2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Download, Sparkles, ArrowLeft, GripVertical, Wand2, Lock, Share2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -22,6 +22,7 @@ import { RecruiterInsights } from "@/components/RecruiterInsights";
 import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
 import { Linkedin, Target, X } from "lucide-react";
 import { getRolePreset } from "@/lib/role-presets";
+import { RegenerateSectionDialog, type SectionPatch } from "@/components/RegenerateSectionDialog";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -42,6 +43,7 @@ export default function Builder() {
   const [showcaseStatus, setShowcaseStatus] = useState<"none" | "submitted" | "approved" | "rejected">("none");
   const [submitOpen, setSubmitOpen] = useState(false);
   const [linkedInOpen, setLinkedInOpen] = useState(false);
+  const [regenSection, setRegenSection] = useState<"summary" | "skills" | "experience" | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -224,6 +226,25 @@ export default function Builder() {
         onImport={(r) => setContent({ ...emptyResume, ...r })}
       />
 
+      {regenSection && (
+        <RegenerateSectionDialog
+          open={!!regenSection}
+          onOpenChange={(v) => { if (!v) setRegenSection(null); }}
+          section={regenSection}
+          currentContent={content}
+          onApply={(patch: SectionPatch) => {
+            setContent((c) => {
+              if (patch.summary !== undefined) {
+                return { ...c, personal: { ...c.personal, summary: patch.summary as string } };
+              }
+              if (patch.skills) return { ...c, skills: patch.skills };
+              if (patch.experience) return { ...c, experience: patch.experience };
+              return c;
+            });
+          }}
+        />
+      )}
+
       <div className="flex-1 grid lg:grid-cols-[420px_1fr] xl:grid-cols-[480px_1fr]">
         {/* Left: Editor */}
         <aside className="border-r overflow-y-auto max-h-[calc(100vh-3.5rem)] p-6 space-y-6">
@@ -263,6 +284,25 @@ export default function Builder() {
                 {tips.slice(0, 3).map((t, i) => <li key={i}>• {t}</li>)}
               </ul>
             )}
+          </div>
+
+          {/* AI Regenerate toolbar — section-level, preserves the rest */}
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+            <div className="flex items-center gap-2 text-xs font-medium text-primary uppercase tracking-widest mb-2">
+              <RefreshCw className="h-3.5 w-3.5" /> Regenerate from prompt
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setRegenSection("summary")}>
+                <Wand2 className="h-3 w-3" /> Summary
+              </Button>
+              <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setRegenSection("skills")}>
+                <Wand2 className="h-3 w-3" /> Skills
+              </Button>
+              <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setRegenSection("experience")}>
+                <Wand2 className="h-3 w-3" /> Experience
+              </Button>
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">Only the chosen section is replaced — everything else stays.</p>
           </div>
 
           {/* Recruiter insights — what works */}
