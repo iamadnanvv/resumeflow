@@ -3,7 +3,7 @@ import type { ResumeContent } from "@/lib/resume-types";
 
 type Props = { content: ResumeContent };
 
-// Tips derived from public recruiter survey aggregates (Jobvite, LinkedIn Talent Insights, Ladders eye-tracking)
+// Heuristics from widely-cited resume best-practice guidance.
 export function RecruiterInsights({ content }: Props) {
   const allBullets = content.experience.flatMap((e) => e.bullets);
   const totalBullets = allBullets.length;
@@ -22,8 +22,8 @@ export function RecruiterInsights({ content }: Props) {
       stat: `${quantPct}%`,
       tip:
         quantPct >= 60
-          ? "Strong — recruiters spend 2× longer on resumes with measurable impact."
-          : "Aim for 60%+. Numbers (%, $, time, scale) get 40% more callbacks (Jobvite 2024).",
+          ? "Strong — measurable impact stands out to recruiters."
+          : "Aim for 60%+. Add numbers (%, $, time, scale) to most bullets.",
       good: quantPct >= 60,
     },
     {
@@ -33,7 +33,7 @@ export function RecruiterInsights({ content }: Props) {
       tip:
         avgBulletLen >= 12 && avgBulletLen <= 22
           ? "In the sweet spot (12–22 words)."
-          : "Recruiters skim 7.4 sec per resume; keep bullets 12–22 words.",
+          : "Recruiters skim quickly — keep bullets 12–22 words for fast scanning.",
       good: avgBulletLen >= 12 && avgBulletLen <= 22,
     },
     {
