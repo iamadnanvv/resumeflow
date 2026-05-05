@@ -7,6 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { ResumeContent } from "@/lib/resume-types";
 
+export type SectionPatch = {
+  summary?: string;
+  skills?: string[];
+  experience?: ResumeContent["experience"];
+};
+
 type Section = "summary" | "skills" | "experience";
 
 const LABELS: Record<Section, string> = {
@@ -32,7 +38,7 @@ export function RegenerateSectionDialog({
   onOpenChange: (v: boolean) => void;
   section: Section;
   currentContent: ResumeContent;
-  onApply: (patch: Partial<ResumeContent>) => void;
+  onApply: (patch: SectionPatch) => void;
 }) {
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +64,7 @@ export function RegenerateSectionDialog({
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      onApply(data as Partial<ResumeContent>);
+      onApply(data as SectionPatch);
       toast.success(`${LABELS[section]} regenerated — rest of resume preserved.`);
       onOpenChange(false);
       setDesc("");
