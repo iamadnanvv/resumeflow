@@ -23,6 +23,7 @@ export type Database = {
           id: string
           job_description: string | null
           job_url: string | null
+          next_step_at: string | null
           notes: string | null
           position: number
           resume_id: string | null
@@ -39,6 +40,7 @@ export type Database = {
           id?: string
           job_description?: string | null
           job_url?: string | null
+          next_step_at?: string | null
           notes?: string | null
           position?: number
           resume_id?: string | null
@@ -55,6 +57,7 @@ export type Database = {
           id?: string
           job_description?: string | null
           job_url?: string | null
+          next_step_at?: string | null
           notes?: string | null
           position?: number
           resume_id?: string | null
@@ -315,6 +318,7 @@ export type Database = {
           ip_hash: string | null
           referrer: string | null
           resume_id: string
+          user_agent: string | null
           viewed_at: string
         }
         Insert: {
@@ -323,6 +327,7 @@ export type Database = {
           ip_hash?: string | null
           referrer?: string | null
           resume_id: string
+          user_agent?: string | null
           viewed_at?: string
         }
         Update: {
@@ -331,6 +336,7 @@ export type Database = {
           ip_hash?: string | null
           referrer?: string | null
           resume_id?: string
+          user_agent?: string | null
           viewed_at?: string
         }
         Relationships: [
