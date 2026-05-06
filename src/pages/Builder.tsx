@@ -23,6 +23,8 @@ import { LinkedInImportDialog } from "@/components/LinkedInImportDialog";
 import { Linkedin, Target, X } from "lucide-react";
 import { getRolePreset } from "@/lib/role-presets";
 import { RegenerateSectionDialog, type SectionPatch } from "@/components/RegenerateSectionDialog";
+import { SharePublicDialog } from "@/components/SharePublicDialog";
+import { Globe } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -44,6 +46,7 @@ export default function Builder() {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [linkedInOpen, setLinkedInOpen] = useState(false);
   const [regenSection, setRegenSection] = useState<"summary" | "skills" | "experience" | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -205,9 +208,17 @@ export default function Builder() {
               <Linkedin className="h-4 w-4" />
               <span className="ml-1.5 hidden sm:inline">LinkedIn</span>
             </Button>
+            <Button size="sm" variant="outline" onClick={() => setShareOpen(true)} title="Share public link">
+              <Globe className="h-4 w-4" />
+              <span className="ml-1.5 hidden sm:inline">Share</span>
+            </Button>
           </div>
         </div>
       </header>
+
+      {id && (
+        <SharePublicDialog open={shareOpen} onOpenChange={setShareOpen} resumeId={id} title={title} />
+      )}
 
       {id && (
         <ShowcaseSubmitDialog

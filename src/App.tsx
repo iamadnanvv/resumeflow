@@ -27,6 +27,8 @@ import Showcase from "./pages/Showcase";
 import ShowcaseDetail from "./pages/ShowcaseDetail";
 import AdminAudit from "./pages/AdminAudit";
 import AdminShowcase from "./pages/AdminShowcase";
+import Applications from "./pages/Applications";
+import PublicResume from "./pages/PublicResume";
 import { AuthProvider } from "./hooks/useAuth";
 import { ReferralCapture } from "./components/ReferralCapture";
 
@@ -64,6 +66,8 @@ const App = () => (
             <Route path="/showcase/:id" element={<ShowcaseDetail />} />
             <Route path="/admin/audit" element={<AdminAudit />} />
             <Route path="/admin/showcase" element={<AdminShowcase />} />
+            <Route path="/applications" element={<Applications />} />
+            <Route path="/r/:slug" element={<PublicResume />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

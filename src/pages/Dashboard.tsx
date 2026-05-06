@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, FileText, Mail, Trash2, Edit3, Sparkles } from "lucide-react";
+import { Plus, FileText, Mail, Trash2, Edit3, Sparkles, Briefcase } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { emptyResume, type ResumeContent } from "@/lib/resume-types";
@@ -124,6 +124,22 @@ export default function Dashboard() {
             </Button>
           </Link>
         </div>
+
+        <Link
+          to="/applications"
+          className="mb-6 block rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 hover:border-primary/40 transition group"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-primary/15 p-2.5"><Briefcase className="h-5 w-5 text-primary" /></div>
+              <div>
+                <div className="font-display text-lg font-semibold">Application Tracker</div>
+                <p className="text-sm text-muted-foreground">Track every job, link the resume you sent, and stay on top of follow-ups.</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="hidden sm:inline-flex group-hover:bg-primary group-hover:text-primary-foreground transition">Open tracker</Button>
+          </div>
+        </Link>
 
         <Tabs defaultValue="resumes" className="w-full">
           <TabsList>
