@@ -352,6 +352,7 @@ export type Database = {
           id: string
           is_public: boolean
           public_slug: string | null
+          public_view_count: number
           showcase_admin_notes: string | null
           showcase_anonymized_content: Json | null
           showcase_industry: string | null
@@ -373,6 +374,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           public_slug?: string | null
+          public_view_count?: number
           showcase_admin_notes?: string | null
           showcase_anonymized_content?: Json | null
           showcase_industry?: string | null
@@ -394,6 +396,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           public_slug?: string | null
+          public_view_count?: number
           showcase_admin_notes?: string | null
           showcase_anonymized_content?: Json | null
           showcase_industry?: string | null
