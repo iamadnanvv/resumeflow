@@ -7,7 +7,7 @@ import { buildSitemap, buildRobots } from "./seo-routes.mjs";
  * Site URL resolves to VITE_SITE_URL, falling back to https://resumelylite.app.
  */
 export default function seoPlugin() {
-  const siteUrl = (process.env.VITE_SITE_URL || "https://resumelylite.app").replace(/\/$/, "");
+  const siteUrl = (process.env.VITE_SITE_URL || "https://resumelylite.netlify.app").replace(/\/$/, "");
 
   return {
     name: "lovable-seo",

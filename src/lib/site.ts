@@ -2,8 +2,12 @@
 // Override at runtime/build by setting VITE_SITE_URL.
 export const SITE_URL = (
   import.meta.env.VITE_SITE_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "https://resumelylite.app")
+  (typeof window !== "undefined" ? window.location.origin : "https://resumelylite.netlify.app")
 ).replace(/\/$/, "");
+
+// Canonical public-facing domain used for shareable resume links, regardless of
+// where the app is currently hosted (preview, custom domain, etc.).
+export const PUBLIC_SHARE_ORIGIN = "https://resumelylite.netlify.app";
 
 export const SITE_NAME = "resumelylite";
 export const TWITTER_HANDLE = "@resumelylite";
