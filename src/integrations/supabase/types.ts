@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      applications: {
+        Row: {
+          applied_at: string | null
+          company: string
+          cover_letter_id: string | null
+          created_at: string
+          id: string
+          job_description: string | null
+          job_url: string | null
+          notes: string | null
+          position: number
+          resume_id: string | null
+          role: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          company: string
+          cover_letter_id?: string | null
+          created_at?: string
+          id?: string
+          job_description?: string | null
+          job_url?: string | null
+          notes?: string | null
+          position?: number
+          resume_id?: string | null
+          role?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          company?: string
+          cover_letter_id?: string | null
+          created_at?: string
+          id?: string
+          job_description?: string | null
+          job_url?: string | null
+          notes?: string | null
+          position?: number
+          resume_id?: string | null
+          role?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_cover_letter_id_fkey"
+            columns: ["cover_letter_id"]
+            isOneToOne: false
+            referencedRelation: "cover_letters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cover_letters: {
         Row: {
           company: string | null
@@ -242,6 +308,41 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_views: {
+        Row: {
+          country: string | null
+          id: string
+          ip_hash: string | null
+          referrer: string | null
+          resume_id: string
+          viewed_at: string
+        }
+        Insert: {
+          country?: string | null
+          id?: string
+          ip_hash?: string | null
+          referrer?: string | null
+          resume_id: string
+          viewed_at?: string
+        }
+        Update: {
+          country?: string | null
+          id?: string
+          ip_hash?: string | null
+          referrer?: string | null
+          resume_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_views_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resumes: {
         Row: {
           ats_score: number | null
@@ -250,6 +351,7 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
+          public_slug: string | null
           showcase_admin_notes: string | null
           showcase_anonymized_content: Json | null
           showcase_industry: string | null
@@ -270,6 +372,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          public_slug?: string | null
           showcase_admin_notes?: string | null
           showcase_anonymized_content?: Json | null
           showcase_industry?: string | null
@@ -290,6 +393,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          public_slug?: string | null
           showcase_admin_notes?: string | null
           showcase_anonymized_content?: Json | null
           showcase_industry?: string | null
@@ -501,6 +605,12 @@ export type Database = {
         | "teacher_premium"
         | "teacher_pro"
       app_role: "admin" | "user"
+      application_status:
+        | "saved"
+        | "applied"
+        | "interview"
+        | "offer"
+        | "rejected"
       payment_status: "created" | "paid" | "failed" | "refunded"
       resume_creation_source:
         | "scratch"
@@ -651,6 +761,13 @@ export const Constants = {
         "teacher_pro",
       ],
       app_role: ["admin", "user"],
+      application_status: [
+        "saved",
+        "applied",
+        "interview",
+        "offer",
+        "rejected",
+      ],
       payment_status: ["created", "paid", "failed", "refunded"],
       resume_creation_source: [
         "scratch",
