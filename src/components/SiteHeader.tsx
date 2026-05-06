@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Shield } from "lucide-react";
+import { LayoutDashboard, Shield, Briefcase } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,6 +63,9 @@ export function SiteHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <LayoutDashboard className="h-4 w-4 mr-2" /> Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/applications")}>
+                    <Briefcase className="h-4 w-4 mr-2" /> Applications
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/billing")}>
                     Billing
